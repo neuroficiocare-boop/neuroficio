@@ -36,8 +36,8 @@ export default function SiteFooter() {
           <div>
             <h4>Get in touch</h4>
             <ul>
-              <li><a href="tel:+914012345678">+91 40 1234 5678</a></li>
-              <li><a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer">WhatsApp us</a></li>
+              <li><a href="tel:+918341471837">+91 83414 71837</a></li>
+              <li><a href="https://wa.me/918341471837" target="_blank" rel="noopener noreferrer">WhatsApp us</a></li>
               <li><a href="mailto:neuroficio.care@gmail.com">neuroficio.care@gmail.com</a></li>
               <li><Link href="/#contact">Book free assessment →</Link></li>
             </ul>

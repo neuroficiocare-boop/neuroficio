@@ -218,7 +218,7 @@ function BookingForm({ goTo }: { goTo: (k: PageKey) => void }) {
 
         {/* STEP 3 */}
         <div className={`form-step${step === 3 ? ' active' : ''}`}>
-          <div className="field"><label>Contact Number (WhatsApp preferred) *</label><input type="tel" required placeholder="+91 98765 43210" /></div>
+          <div className="field"><label>Contact Number (WhatsApp preferred) *</label><input type="tel" required placeholder="+91 83414 71837" /></div>
           <div className="field">
             <label>Best time to call</label>
             <select>
@@ -314,7 +314,7 @@ function PageHome({ goTo }: { goTo: (k: PageKey) => void }) {
                 </div>
                 <div className="field">
                   <label>WhatsApp Number</label>
-                  <input type="tel" placeholder="+91 98765 43210" ref={phoneRef} />
+                  <input type="tel" placeholder="+91 83414 71837" ref={phoneRef} />
                 </div>
                 <button className="btn btn-dark btn-block" onClick={quickBook}>Request free assessment →</button>
                 <p style={{ fontSize: 12, textAlign: 'center', marginTop: 14, color: 'var(--ink-soft)' }}>We&apos;ll call within 24 hours. No payment details needed.</p>
@@ -478,7 +478,7 @@ function PageHome({ goTo }: { goTo: (k: PageKey) => void }) {
             <h2 style={{ color: 'white', maxWidth: 560 }}>The first step costs nothing. Most families wish they&apos;d taken it sooner.</h2>
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
               <button className="btn btn-primary" onClick={() => goTo('contact')}>Book your free assessment</button>
-              <a href="https://wa.me/919876543210" className="btn btn-ghost">Message us on WhatsApp</a>
+              <a href="https://wa.me/918341471837" className="btn btn-ghost">Message us on WhatsApp</a>
             </div>
           </div>
         </div>
@@ -856,17 +856,17 @@ function PageContact({ goTo }: { goTo: (k: PageKey) => void }) {
             <div className="booking-side">
               <div className="card side-card">
                 <h3 style={{ marginBottom: 18 }}>Prefer to talk now?</h3>
-                <a href="https://wa.me/919876543210" className="contact-row">
+                <a href="https://wa.me/918341471837" className="contact-row">
                   <div className="contact-row-icon" style={{ background: '#E7FAF1' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2z" /></svg>
                   </div>
-                  <div><strong>WhatsApp</strong><span>+91 98765 43210</span></div>
+                  <div><strong>WhatsApp</strong><span>+91 83414 71837</span></div>
                 </a>
-                <a href="tel:+914012345678" className="contact-row">
+                <a href="tel:+918341471837" className="contact-row">
                   <div className="contact-row-icon" style={{ background: '#EAF2FE' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D4ED8" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
                   </div>
-                  <div><strong>Call us</strong><span>+91 40 1234 5678</span></div>
+                  <div><strong>Call us</strong><span>+91 83414 71837</span></div>
                 </a>
                 <a href="mailto:neuroficio.care@gmail.com" className="contact-row">
                   <div className="contact-row-icon" style={{ background: '#F0EEFD' }}>
@@ -935,9 +935,9 @@ export default function App() {
             <Link href="/blog">Blog</Link>
           </div>
           <div className="nav-cta">
-            <a href="tel:+914012345678" className="nav-phone">
+            <a href="tel:+918341471837" className="nav-phone">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
-              +91 40 1234 5678
+              +91 83414 71837
             </a>
             <button className="btn btn-dark btn-sm" onClick={() => goTo('contact')}>Book Free Assessment</button>
             <button className="nav-burger" onClick={() => setMobileOpen(true)} aria-label="Open menu">
@@ -971,7 +971,7 @@ export default function App() {
       {currentPage === 'contact' && <PageContact goTo={goTo} />}
 
       {/* WHATSAPP FLOAT */}
-      <a className="wa-float" href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+      <a className="wa-float" href="https://wa.me/918341471837" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
         <svg width="30" height="30" viewBox="0 0 24 24" fill="white">
           <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm5.84 14.07c-.24.68-1.4 1.32-1.93 1.4-.5.08-1.12.11-1.81-.11-.42-.13-.95-.31-1.64-.6-2.88-1.24-4.76-4.14-4.91-4.33-.14-.19-1.18-1.57-1.18-3 0-1.43.75-2.13 1.02-2.42.27-.29.58-.36.78-.36.19 0 .39 0 .56.01.18.01.42-.07.65.5.24.58.81 2 .88 2.15.07.14.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.29.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.35 1.46.29.15.46.12.63-.07.17-.19.71-.83.9-1.11.19-.29.38-.24.63-.14.26.1 1.64.77 1.92.91.29.14.48.22.55.34.07.13.07.71-.17 1.39z" />
         </svg>
@@ -1011,8 +1011,8 @@ export default function App() {
             <div>
               <h4>Get in touch</h4>
               <ul>
-                <li><a href="tel:+914012345678">+91 40 1234 5678</a></li>
-                <li><a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer">WhatsApp us</a></li>
+                <li><a href="tel:+918341471837">+91 83414 71837</a></li>
+                <li><a href="https://wa.me/918341471837" target="_blank" rel="noopener noreferrer">WhatsApp us</a></li>
                 <li><a href="mailto:neuroficio.care@gmail.com">neuroficio.care@gmail.com</a></li>
                 <li><a href="#contact" onClick={(e) => { e.preventDefault(); goTo('contact'); }}>Book free assessment →</a></li>
               </ul>

@@ -61,7 +61,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
       '@type': 'MedicalBusiness',
       name: 'Neuroficio',
       url: SITE_URL,
-      telephone: '+91-4012345678',
+      telephone: '+91-8341471837',
       address: {
         '@type': 'PostalAddress',
         addressLocality: 'Hyderabad',
