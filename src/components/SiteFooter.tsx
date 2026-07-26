@@ -9,7 +9,7 @@ export default function SiteFooter() {
           <div>
             <div className="footer-logo">
               <LogoMark size={26} />
-              Neuro<span style={{ color: '#5EEAD4' }}>Ficio</span>
+              <span>Neuro<span style={{ color: '#5EEAD4' }}>Ficio</span></span>
             </div>
             <p style={{ fontSize: 14, maxWidth: 280, marginBottom: 18 }}>Specialist neurological rehabilitation, delivered at home. A Therapy Partners service, trusted across Hyderabad and beyond.</p>
             <div className="pill" style={{ background: 'rgba(94,234,212,0.12)', color: '#5EEAD4' }}>First assessment &amp; session free</div>

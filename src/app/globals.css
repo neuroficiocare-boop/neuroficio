@@ -161,6 +161,7 @@ p{ color: var(--ink-soft); }
   display:flex;
   align-items:center;
   justify-content:space-between;
+  gap:20px;
   height: 76px;
 }
 .logo{
@@ -171,6 +172,8 @@ p{ color: var(--ink-soft); }
   font-size:21px;
   color: var(--navy-deep);
   letter-spacing:-0.02em;
+  white-space:nowrap;
+  flex-shrink:0;
 }
 .logo .mark{ width:30px; height:30px; flex-shrink:0; }
 .logo .ficio{ color: var(--teal-dark); font-weight:700; }
@@ -184,14 +187,17 @@ p{ color: var(--ink-soft); }
 .nav-links{
   display:flex;
   align-items:center;
-  gap:36px;
+  gap:20px;
+  flex-wrap:nowrap;
+  min-width:0;
 }
 .nav-links a{
-  font-size:14.5px;
+  font-size:13.5px;
   font-weight:600;
   color: var(--navy);
   position:relative;
   padding: 6px 0;
+  white-space:nowrap;
 }
 .nav-links a::after{
   content:'';
@@ -208,13 +214,20 @@ p{ color: var(--ink-soft); }
   transform-origin:left;
 }
 .nav-links a.active{ color: var(--teal-dark); }
-.nav-cta{ display:flex; align-items:center; gap:14px; }
+.nav-cta{ display:flex; align-items:center; gap:14px; flex-shrink:0; }
 .nav-phone{
   font-size:14px; font-weight:600; color:var(--navy);
-  display:flex; align-items:center; gap:6px;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  white-space:nowrap;
+  width:38px; height:38px; border-radius:50%;
+  border:1.5px solid var(--line);
+  flex-shrink:0;
+  transition: background .2s, border-color .2s;
 }
+.nav-phone:hover{ background: var(--stone); border-color: var(--teal); }
+.nav-phone-number{ display:none; }
 .nav-burger{ display:none; }
-@media (max-width: 920px){
+@media (max-width: 1240px){
   .nav-links{ display:none; }
   .nav-phone{ display:none; }
   .nav-burger{ display:flex; }
