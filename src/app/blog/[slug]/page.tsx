@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   const url = `${SITE_URL}/blog/${post.slug}`;
   return {
-    title: `${post.title} | Neuroficio, Hyderabad`,
+    title: `${post.title} | NeuroFicio, Hyderabad`,
     description: post.excerpt,
     authors: [{ name: post.author }],
     alternates: { canonical: url },
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: post.title,
       description: post.excerpt,
       url,
-      siteName: 'Neuroficio',
+      siteName: 'NeuroFicio',
     },
     twitter: {
       card: 'summary_large_image',
@@ -59,13 +59,15 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     author: { '@type': 'Organization', name: post.author },
     publisher: {
       '@type': 'MedicalBusiness',
-      name: 'Neuroficio',
+      name: 'NeuroFicio',
       url: SITE_URL,
       telephone: '+91-8341471837',
       address: {
         '@type': 'PostalAddress',
+        streetAddress: 'Second floor, Huda Residential Layout, Plot 118, above Frills Boutique (opposite Reliance Digital), Nallagandla',
         addressLocality: 'Hyderabad',
         addressRegion: 'Telangana',
+        postalCode: '500019',
         addressCountry: 'IN',
       },
     },

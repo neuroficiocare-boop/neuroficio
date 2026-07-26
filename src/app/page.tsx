@@ -3,8 +3,19 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 
-type PageKey = 'home' | 'services' | 'equipment' | 'community' | 'about' | 'contact';
-const ORDER: PageKey[] = ['home', 'services', 'equipment', 'community', 'about', 'contact'];
+type PageKey = 'home' | 'services' | 'international' | 'equipment' | 'second-opinion' | 'community' | 'about' | 'contact';
+const ORDER: PageKey[] = ['home', 'services', 'international', 'equipment', 'second-opinion', 'community', 'about', 'contact'];
+
+const INTL_REGIONS = ['🇬🇧 United Kingdom', '🇺🇸 United States', '🇦🇪 UAE', '🌍 East Africa', '🌍 West Africa', '🇪🇺 Across Europe'];
+
+const PLATFORM_OFFERINGS = [
+  { icon: '🏠', title: 'Home Neurorehabilitation', desc: 'Specialist neuro physiotherapy delivered at your doorstep in Hyderabad.' },
+  { icon: '🌍', title: 'International Tele-Neurorehabilitation', desc: 'Structured, video-based rehab programmes for patients living outside India.' },
+  { icon: '🩺', title: 'Second Opinions', desc: 'Connect with expert neuro and other medical consultants before a major decision.' },
+  { icon: '🤝', title: 'Family & Caregiver Coaching', desc: 'Practical guidance and emotional support for the people caring for your loved one.' },
+  { icon: '🗺️', title: 'Recovery Planning', desc: 'A personalised, outcome-linked roadmap from day one, reviewed as you progress.' },
+  { icon: '⚙️', title: 'Equipment Sale for Recovery', desc: 'Clinically recommended mobility, tech and home-safety equipment, delivered to your door.' },
+];
 
 const PATHWAY_STEPS = [
   { n: '01', t: 'Free Assessment', d: 'A specialist visits your home (or video call) to evaluate movement, function, cognition and home safety.' },
@@ -205,8 +216,8 @@ function BookingForm({ goTo }: { goTo: (k: PageKey) => void }) {
               </select>
             ) : (
               <select>
-                <option value="">Select your country</option>
-                {['United Kingdom','UAE','United States','Australia','Tanzania','Gulf Region','Other'].map(c => <option key={c}>{c}</option>)}
+                <option value="">Select your country / region</option>
+                {['United Kingdom','United States','UAE','East Africa','West Africa','Europe','Other'].map(c => <option key={c}>{c}</option>)}
               </select>
             )}
           </div>
@@ -276,11 +287,11 @@ function PageHome({ goTo }: { goTo: (k: PageKey) => void }) {
             <div className="hero-copy">
               <div className="pill" style={{ background: 'rgba(94,234,212,0.14)', color: '#5EEAD4', marginBottom: 24 }}>
                 <span className="node-dot" style={{ boxShadow: 'none', width: 7, height: 7 }} />
-                Now serving Hyderabad &amp; international diaspora patients
+                Now serving Hyderabad &amp; international patients
               </div>
-              <h1 style={{ color: 'white' }}>Neuro rehab that comes <span style={{ color: '#5EEAD4' }}>to your door</span>, not the other way round.</h1>
+              <h1 style={{ color: 'white' }}>Expert Neurorehabilitation, Delivered <span style={{ color: '#5EEAD4' }}>Beyond Hospital Walls.</span></h1>
               <p className="lead" style={{ color: 'rgba(255,255,255,0.72)', margin: '22px 0 34px', maxWidth: 520 }}>
-                Specialist stroke, brain injury, spinal cord injury and Parkinson&apos;s rehabilitation — delivered at home, guided by technology, backed by a community that understands. Your first assessment and first session are completely free.
+                Specialised home-based rehabilitation and virtual care for stroke, Parkinson&apos;s disease, spinal cord injury and neurological conditions — supporting patients and families worldwide.
               </p>
               <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
                 <button className="btn btn-primary" onClick={() => goTo('contact')}>
@@ -324,13 +335,33 @@ function PageHome({ goTo }: { goTo: (k: PageKey) => void }) {
         </div>
       </section>
 
+      {/* NEURO RECOVERY PLATFORM */}
+      <section className="section">
+        <div className="container">
+          <div className="section-head center">
+            <span className="eyebrow">A Neuro Recovery Platform</span>
+            <h2>More than home therapy. A complete neuro recovery platform.</h2>
+            <p className="lead" style={{ margin: '0 auto' }}>From the first assessment to long-term recovery planning, NeuroFicio brings together every layer of support a neurological recovery actually needs.</p>
+          </div>
+          <div className="group-grid platform-grid">
+            {PLATFORM_OFFERINGS.map((o) => (
+              <div key={o.title} className="group-card">
+                <div className="group-icon">{o.icon}</div>
+                <h3>{o.title}</h3>
+                <p style={{ fontSize: '14.5px' }}>{o.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* DIFFERENTIATORS STRIP */}
       <section className="section-tight" style={{ background: 'var(--navy-deep)' }}>
         <div className="container">
           <div className="diff-strip">
             <div className="diff-item">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5EEAD4" strokeWidth="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><path d="M9 22V12h6v10" /></svg>
-              Home care is our primary model
+              Recovery at Home &amp; Telerehabilitation
             </div>
             <div className="diff-item">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5EEAD4" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></svg>
@@ -436,13 +467,13 @@ function PageHome({ goTo }: { goTo: (k: PageKey) => void }) {
         <div className="container">
           <div className="intl-banner">
             <div>
-              <span className="eyebrow" style={{ marginBottom: 14 }}>For the diaspora</span>
-              <h2 style={{ fontSize: 30 }}>Managing a parent&apos;s recovery from abroad? We work with you, wherever you are.</h2>
-              <p className="lead" style={{ marginTop: 14, maxWidth: 520 }}>Structured remote consultations, video-based assessment, and ongoing programme review — currently supporting families across six countries.</p>
-              <button className="btn btn-primary" style={{ marginTop: 24 }} onClick={() => goTo('contact')}>Book a remote consultation</button>
+              <span className="eyebrow" style={{ marginBottom: 14 }}>International Patients</span>
+              <h2 style={{ fontSize: 30 }}>Bringing Specialist Neurorehabilitation Beyond Borders.</h2>
+              <p className="lead" style={{ marginTop: 14, maxWidth: 520 }}>Supporting patients and families across North America, Europe, Africa and beyond through expert tele-neurorehabilitation and recovery guidance.</p>
+              <button className="btn btn-primary" style={{ marginTop: 24 }} onClick={() => goTo('international')}>Explore international care</button>
             </div>
             <div className="intl-flags">
-              {['🇬🇧 United Kingdom', '🇦🇪 UAE', '🇺🇸 United States', '🇦🇺 Australia', '🇹🇿 Tanzania', 'Gulf Region'].map(f => (
+              {INTL_REGIONS.map(f => (
                 <div key={f} className="flag-chip">{f}</div>
               ))}
             </div>
@@ -493,8 +524,8 @@ function PageServices({ goTo }: { goTo: (k: PageKey) => void }) {
     <div className="page active">
       <section className="page-hero">
         <div className="container">
-          <span className="eyebrow" style={{ color: '#5EEAD4' }}>Services</span>
-          <h1 style={{ color: 'white', maxWidth: 760 }}>How our home care works, from first call to lasting recovery.</h1>
+          <span className="eyebrow" style={{ color: '#5EEAD4' }}>What We Treat</span>
+          <h1 style={{ color: 'white', maxWidth: 760 }}>How our recovery programme works, from first call to lasting recovery.</h1>
           <p className="lead" style={{ color: 'rgba(255,255,255,0.7)', maxWidth: 600, marginTop: 18 }}>Five connected steps. No hospital commute, no waiting room, no disruption to the environment where your recovery actually happens.</p>
         </div>
       </section>
@@ -562,7 +593,7 @@ function PageServices({ goTo }: { goTo: (k: PageKey) => void }) {
         <div className="container">
           <div className="section-head">
             <span className="eyebrow">Conditions we specialise in</span>
-            <h2>Deep expertise, not broad strokes</h2>
+            <h2>Depth of Expertise, Dedicated to Neurological Recovery.</h2>
           </div>
           <div className="condition-detail-grid">
             {[
@@ -585,7 +616,7 @@ function PageServices({ goTo }: { goTo: (k: PageKey) => void }) {
           <div className="section-head center">
             <span className="eyebrow">Online support groups</span>
             <h2>Recovery is a daily lived experience, not a clinical event</h2>
-            <p className="lead">Our online support groups meet weekly via video call and are moderated by our clinical team — free to join for all active Neuroficio patients.</p>
+            <p className="lead">Our online support groups meet weekly via video call and are moderated by our clinical team — free to join for all active NeuroFicio patients.</p>
           </div>
           <div className="group-grid">
             {[
@@ -606,13 +637,52 @@ function PageServices({ goTo }: { goTo: (k: PageKey) => void }) {
           </div>
         </div>
       </section>
+      <section className="section">
+        <div className="container">
+          <div className="final-cta">
+            <h2 style={{ color: 'white', maxWidth: 560 }}>Ready to take the first step?</h2>
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              <button className="btn btn-primary" onClick={() => goTo('contact')}>Book your free assessment</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+/* ---- PAGE: INTERNATIONAL ---- */
+function PageInternational({ goTo }: { goTo: (k: PageKey) => void }) {
+  return (
+    <div className="page active">
+      <section className="page-hero">
+        <div className="container">
+          <span className="eyebrow" style={{ color: '#5EEAD4' }}>International Patients</span>
+          <h1 style={{ color: 'white', maxWidth: 760 }}>Bringing Specialist Neurorehabilitation Beyond Borders.</h1>
+          <p className="lead" style={{ color: 'rgba(255,255,255,0.7)', maxWidth: 620, marginTop: 18 }}>Supporting patients and families across North America, Europe, Africa and beyond through expert tele-neurorehabilitation and recovery guidance.</p>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <div className="section-head center">
+            <span className="eyebrow">Currently supporting families in</span>
+            <h2>Wherever you are, specialist neuro recovery is reachable.</h2>
+          </div>
+          <div className="intl-flags" style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' }}>
+            {INTL_REGIONS.map(f => (
+              <div key={f} className="flag-chip">{f}</div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="section" style={{ background: 'var(--navy-deep)' }}>
         <div className="container">
           <div className="remote-grid">
             <div>
-              <span className="eyebrow" style={{ color: '#5EEAD4' }}>International remote consultation</span>
-              <h2 style={{ color: 'white', marginTop: 14 }}>For patients outside Hyderabad — or the diaspora managing care abroad</h2>
-              <p style={{ color: 'rgba(255,255,255,0.65)', marginTop: 16 }}>Currently serving patients in the UK, UAE, USA, Australia, Tanzania and the Gulf region with structured remote programmes.</p>
+              <span className="eyebrow" style={{ color: '#5EEAD4' }}>International Tele-Neurorehabilitation</span>
+              <h2 style={{ color: 'white', marginTop: 14 }}>When Specialist Neurorehabilitation Isn&apos;t Available Locally</h2>
             </div>
             <div className="remote-list">
               {['Video-based neurological assessment', 'Home exercise programme design with video demonstration library', 'Liaison with your local treating team', 'Equipment selection guidance suited to your country', 'Ongoing teleconsultation check-ins and programme review'].map(item => (
@@ -622,12 +692,48 @@ function PageServices({ goTo }: { goTo: (k: PageKey) => void }) {
           </div>
         </div>
       </section>
+
+      <section className="section" style={{ background: 'var(--stone)' }}>
+        <div className="container">
+          <div className="section-head center">
+            <span className="eyebrow">What families say</span>
+            <h2>Recovery guidance that travels with you</h2>
+          </div>
+          <div className="intl-testimonial-grid">
+            <div className="card intl-testimonial-card">
+              <p className="serif" style={{ fontSize: 18, color: 'var(--navy-deep)', lineHeight: 1.6 }}>
+                &quot;Coordinating my mother&apos;s stroke recovery from London felt impossible until we found a team that could assess her over video and actually talk to her local doctors. The weekly check-ins gave the whole family peace of mind.&quot;
+              </p>
+              <div style={{ marginTop: 22, display: 'flex', alignItems: 'center', gap: 14 }}>
+                <div className="avatar-circle">RK</div>
+                <div>
+                  <div style={{ fontWeight: 700, color: 'var(--navy-deep)' }}>Caregiver, United Kingdom</div>
+                  <div style={{ fontSize: '13.5px', color: 'var(--ink-soft)' }}>Family managing recovery remotely</div>
+                </div>
+              </div>
+            </div>
+            <div className="card intl-testimonial-card">
+              <p className="serif" style={{ fontSize: 18, color: 'var(--navy-deep)', lineHeight: 1.6 }}>
+                &quot;We couldn&apos;t find a neuro specialist near us, so a remote consultation and a structured home programme became the difference between stalling and real progress.&quot;
+              </p>
+              <div style={{ marginTop: 22, display: 'flex', alignItems: 'center', gap: 14 }}>
+                <div className="avatar-circle">SP</div>
+                <div>
+                  <div style={{ fontWeight: 700, color: 'var(--navy-deep)' }}>Patient family, East Africa</div>
+                  <div style={{ fontSize: '13.5px', color: 'var(--ink-soft)' }}>Tele-neurorehabilitation programme</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="section">
         <div className="container">
           <div className="final-cta">
-            <h2 style={{ color: 'white', maxWidth: 560 }}>Ready to take the first step?</h2>
+            <h2 style={{ color: 'white', maxWidth: 560 }}>Book a remote consultation, wherever you are.</h2>
             <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-              <button className="btn btn-primary" onClick={() => goTo('contact')}>Book your free assessment</button>
+              <button className="btn btn-primary" onClick={() => goTo('contact')}>Book a remote consultation</button>
             </div>
           </div>
         </div>
@@ -680,6 +786,93 @@ function PageEquipment({ goTo }: { goTo: (k: PageKey) => void }) {
   );
 }
 
+/* ---- PAGE: SECOND OPINION ---- */
+function PageSecondOpinion({ goTo }: { goTo: (k: PageKey) => void }) {
+  const waLink = 'https://wa.me/918341471837?text=Hi%2C%20I%27d%20like%20to%20request%20a%20second%20opinion.';
+  return (
+    <div className="page active">
+      <section className="page-hero">
+        <div className="container">
+          <span className="eyebrow" style={{ color: '#5EEAD4' }}>Second Opinion Clinic</span>
+          <h1 style={{ color: 'white', maxWidth: 760 }}>A second opinion, before a major decision.</h1>
+          <p className="lead" style={{ color: 'rgba(255,255,255,0.7)', maxWidth: 620, marginTop: 18 }}>Get clarity from expert neuro and other medical consultants before committing to surgery, a treatment plan, or a change in care — without leaving home.</p>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <div className="section-head">
+            <span className="eyebrow">When to seek a second opinion</span>
+            <h2>Big decisions deserve a second, expert view</h2>
+          </div>
+          <div className="group-grid">
+            {[
+              { icon: '🧠', title: 'Diagnosis confirmation', desc: 'Get an independent read on a neurological diagnosis before you act on it.' },
+              { icon: '🔬', title: 'Treatment plan review', desc: 'Understand whether a proposed treatment or surgery plan is the right fit.' },
+              { icon: '💊', title: 'Medication review', desc: 'A second view on long-term medication and management strategy.' },
+              { icon: '📈', title: 'Ongoing care review', desc: 'Check whether current therapy or care is actually on track.' },
+            ].map(g => (
+              <div key={g.title} className="group-card">
+                <div className="group-icon">{g.icon}</div>
+                <h3>{g.title}</h3>
+                <p style={{ fontSize: '14.5px' }}>{g.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="section" style={{ background: 'var(--stone)' }}>
+        <div className="container">
+          <div className="section-head">
+            <span className="eyebrow">How it works</span>
+            <h2>Simple, structured, and confidential</h2>
+          </div>
+          <div className="detail-steps">
+            <div className="detail-step">
+              <div className="detail-step-num">01</div>
+              <div>
+                <h3>Share your reports on WhatsApp</h3>
+                <p>Send your medical reports, scans and history to our team over WhatsApp — no forms, no portals.</p>
+              </div>
+            </div>
+            <div className="detail-step">
+              <div className="detail-step-num">02</div>
+              <div>
+                <h3>We match you with the right consultant</h3>
+                <p>Our clinical team reviews your case and connects you with the right neuro or medical specialist for your situation.</p>
+              </div>
+            </div>
+            <div className="detail-step">
+              <div className="detail-step-num">03</div>
+              <div>
+                <h3>Get a structured second opinion</h3>
+                <p>Receive a clear, written or video-based second opinion you can bring back to your treating team.</p>
+              </div>
+            </div>
+          </div>
+          <div className="equip-note" style={{ marginTop: 40 }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0D9488" strokeWidth="2" style={{ flexShrink: 0 }}><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></svg>
+            <p style={{ color: 'var(--navy)', fontWeight: 500 }}>We coordinate everything for you over WhatsApp — you won&apos;t need to search for or contact individual doctors yourself.</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container">
+          <div className="final-cta">
+            <h2 style={{ color: 'white', maxWidth: 560 }}>Ready for a second opinion?</h2>
+            <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
+              <a href={waLink} target="_blank" rel="noopener noreferrer" className="btn btn-primary">Connect on WhatsApp →</a>
+              <button className="btn btn-ghost" onClick={() => goTo('contact')}>Or book a call</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+
 /* ---- PAGE: COMMUNITY ---- */
 function PageCommunity({ goTo }: { goTo: (k: PageKey) => void }) {
   return (
@@ -720,7 +913,7 @@ function PageCommunity({ goTo }: { goTo: (k: PageKey) => void }) {
             {[
               { title: 'Clinically moderated', body: 'Every group is moderated by a member of our clinical team — never an unstructured free-for-all.' },
               { title: 'Video call format', body: 'Face-to-face connection, weekly, from wherever you are — including for our international patients.' },
-              { title: 'Free for active patients', body: "No separate cost. If you're in an active Neuroficio programme, you're welcome in every relevant group." },
+              { title: 'Free for active patients', body: "No separate cost. If you're in an active NeuroFicio programme, you're welcome in every relevant group." },
             ].map(i => (
               <div key={i.title} className="how-group-item">
                 <div className="node-dot" style={{ width: 12, height: 12 }} />
@@ -760,10 +953,10 @@ function PageAbout({ goTo }: { goTo: (k: PageKey) => void }) {
           <div className="story-layout">
             <div className="story-copy">
               <p className="serif" style={{ fontSize: 23, lineHeight: 1.6, color: 'var(--navy-deep)', marginBottom: 28 }}>
-                Neuroficio was born from a simple but powerful observation: the gap between hospital discharge and true functional recovery is where most neurological patients fall short — not because they lack will, but because specialist support stops the moment they leave the ward.
+                NeuroFicio was born from a simple but powerful observation: the gap between hospital discharge and true functional recovery is where most neurological patients fall short — not because they lack will, but because specialist support stops the moment they leave the ward.
               </p>
               <p style={{ fontSize: 17, marginBottom: 20 }}>We exist to close that gap. By bringing specialist neurological physiotherapy directly into the home, we extend the rehabilitation continuum into the environment that matters most — where patients live, move, and rebuild their lives.</p>
-              <p style={{ fontSize: 17 }}>Neuroficio operates under Therapy Partners, a trusted name in rehabilitation across Hyderabad, with a clinical philosophy grounded in evidence, neuroplasticity science, and deep respect for every patient&apos;s unique recovery journey.</p>
+              <p style={{ fontSize: 17 }}>NeuroFicio operates under Therapy Partners, a trusted name in rehabilitation across Hyderabad, with a clinical philosophy grounded in evidence, neuroplasticity science, and deep respect for every patient&apos;s unique recovery journey.</p>
             </div>
             <div className="story-pillars">
               <div className="mini-pillar">
@@ -808,11 +1001,11 @@ function PageAbout({ goTo }: { goTo: (k: PageKey) => void }) {
             </div>
             <div className="diff-list">
               {[
-                'Home care is our primary model, not an add-on service',
+                'Recovery at Home & Telerehabilitation, not an add-on service',
                 'Specialists exclusively in neurological conditions',
                 'Technology tools prescribed and guided by our clinical team',
                 'Online support groups moderated by specialists, not volunteers',
-                'International remote consultation for diaspora families',
+                'Expert Remote Neurorehabilitation for Families Living Abroad',
                 'First assessment and first therapy session completely free',
                 'Transparent, outcome-linked care plans from day one',
               ].map(item => (
@@ -876,6 +1069,15 @@ function PageContact({ goTo }: { goTo: (k: PageKey) => void }) {
                 </a>
               </div>
               <div className="card side-card">
+                <h3 style={{ marginBottom: 14 }}>Visit us</h3>
+                <p style={{ fontSize: '14.5px' }}>
+                  NeuroFicio<br />
+                  Second floor, Huda Residential Layout, Plot 118,<br />
+                  above Frills Boutique (opposite Reliance Digital),<br />
+                  Nallagandla, Hyderabad, Telangana 500019.
+                </p>
+              </div>
+              <div className="card side-card">
                 <h3 style={{ marginBottom: 14 }}>Service areas — Hyderabad</h3>
                 <div className="area-tags">
                   {['Nallagandla','Tellapur','Nanakramguda','Gachibowli','Kondapur','Manikonda','Miyapur','Kukatpally','Madhapur','Jubilee Hills','Banjara Hills'].map(a => <span key={a}>{a}</span>)}
@@ -883,7 +1085,7 @@ function PageContact({ goTo }: { goTo: (k: PageKey) => void }) {
               </div>
               <div className="card side-card" style={{ background: 'var(--navy-deep)', border: 'none' }}>
                 <h3 style={{ color: 'white', marginBottom: 10 }}>International consultations</h3>
-                <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '14.5px' }}>Available via video consultation for patients in the UK, UAE, USA, Australia, Tanzania and the Gulf region.</p>
+                <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '14.5px' }}>Available via video consultation for patients across the UK, USA, UAE, East Africa, West Africa and Europe.</p>
               </div>
             </div>
           </div>
@@ -912,10 +1114,10 @@ export default function App() {
 
   const navLinks: { label: string; key: PageKey }[] = [
     { label: 'Home', key: 'home' },
-    { label: 'Services', key: 'services' },
-    { label: 'Equipment', key: 'equipment' },
-    { label: 'Community', key: 'community' },
-    { label: 'About', key: 'about' },
+    { label: 'What We Treat', key: 'services' },
+    { label: 'International Patients', key: 'international' },
+    { label: 'Neuro Equipment', key: 'equipment' },
+    { label: 'Second Opinion Clinic', key: 'second-opinion' },
     { label: 'Contact', key: 'contact' },
   ];
 
@@ -965,7 +1167,9 @@ export default function App() {
       {/* PAGES */}
       {currentPage === 'home' && <PageHome goTo={goTo} />}
       {currentPage === 'services' && <PageServices goTo={goTo} />}
+      {currentPage === 'international' && <PageInternational goTo={goTo} />}
       {currentPage === 'equipment' && <PageEquipment goTo={goTo} />}
+      {currentPage === 'second-opinion' && <PageSecondOpinion goTo={goTo} />}
       {currentPage === 'community' && <PageCommunity goTo={goTo} />}
       {currentPage === 'about' && <PageAbout goTo={goTo} />}
       {currentPage === 'contact' && <PageContact goTo={goTo} />}
@@ -992,7 +1196,7 @@ export default function App() {
             <div>
               <h4>Explore</h4>
               <ul>
-                <li><a href="#services" onClick={(e) => { e.preventDefault(); goTo('services'); }}>How home care works</a></li>
+                <li><a href="#services" onClick={(e) => { e.preventDefault(); goTo('services'); }}>How our recovery programme works</a></li>
                 <li><a href="#equipment" onClick={(e) => { e.preventDefault(); goTo('equipment'); }}>Equipment &amp; tools</a></li>
                 <li><a href="#community" onClick={(e) => { e.preventDefault(); goTo('community'); }}>Support groups</a></li>
                 <li><a href="#about" onClick={(e) => { e.preventDefault(); goTo('about'); }}>Our story</a></li>
@@ -1019,8 +1223,8 @@ export default function App() {
             </div>
           </div>
           <div className="footer-bottom">
-            <span>© 2026 Neuroficio, a Therapy Partners service. All rights reserved.</span>
-            <span>Hyderabad, India · Remote consultations worldwide</span>
+            <span>© 2026 NeuroFicio, a Therapy Partners service. All rights reserved.</span>
+            <span>Nallagandla, Hyderabad · Remote consultations worldwide</span>
           </div>
         </div>
       </footer>

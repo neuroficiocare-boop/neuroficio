@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Neuroficio — Neuro Rehabilitation at Home",
+  title: "NeuroFicio — Neuro Rehabilitation at Home",
   description:
     "Specialist stroke, brain injury, spinal cord injury and Parkinson's rehabilitation — delivered at home, guided by technology, backed by community. First assessment and first session are completely free.",
 };

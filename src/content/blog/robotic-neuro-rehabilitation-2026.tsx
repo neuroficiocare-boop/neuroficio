@@ -29,11 +29,11 @@ const PROGRAM_TABLE = [
 ];
 
 const WHY_NEUROFICIO = [
-  'Home care is our primary model, not an add-on service',
+  'Recovery at Home & Telerehabilitation, not an add-on service',
   'Specialists exclusively in neurological conditions',
   'Technology tools prescribed and guided by our clinical team, never sold as a gadget',
   'Online support groups moderated by specialists, not volunteers',
-  'International remote consultation for diaspora families',
+  'Expert Remote Neurorehabilitation for Families Living Abroad',
   'First assessment and first therapy session completely free',
 ];
 
@@ -74,7 +74,7 @@ export default function ArticleBody() {
       <p>
         This guide explains how robotic-assisted therapy fits into stroke and paralysis recovery, what a modern
         neuro-rehab program should include, and how that thinking shapes the technology-guided, home-based care
-        model at Neuroficio in Hyderabad.
+        model at NeuroFicio in Hyderabad.
       </p>
 
       <h2>What Happens During a Stroke</h2>
@@ -124,7 +124,7 @@ export default function ArticleBody() {
         For most patients recovering at home, the more accessible version of this same shift shows up as
         wearable motion-tracking devices and tele-rehab platforms — tools that quantify movement quality
         between visits and keep structured practice going every day, not just on the days a therapist is in the
-        room. That&apos;s the thinking behind Neuroficio&apos;s Technology-Guided Recovery pillar: our clinical
+        room. That&apos;s the thinking behind NeuroFicio&apos;s Technology-Guided Recovery pillar: our clinical
         team prescribes and supervises the use of home-appropriate devices, so <strong>technology
         doesn&apos;t replace the therapist — it extends the therapy</strong>.
       </p>
@@ -162,21 +162,21 @@ export default function ArticleBody() {
       <p>
         This same technology-guided, home-based approach applies to a wide range of conditions beyond stroke
         alone, including traumatic brain injury, spinal cord injury, and Parkinson&apos;s — the four condition
-        groups Neuroficio&apos;s specialists focus on exclusively, rather than treating every diagnosis
+        groups NeuroFicio&apos;s specialists focus on exclusively, rather than treating every diagnosis
         generally.
       </p>
 
-      <h2>About Neuroficio</h2>
+      <h2>About NeuroFicio</h2>
       <p>
-        Neuroficio is a specialist neurological rehabilitation service operating under Therapy Partners in
+        NeuroFicio is a specialist neurological rehabilitation service operating under Therapy Partners in
         Hyderabad, built on three pillars: home-based care delivered by trained neuro specialists,
         technology-guided rehabilitation tools prescribed by the clinical team, and continuous online support
-        for patients and caregivers. Rather than a hospital-based robotic facility, Neuroficio brings
+        for patients and caregivers. Rather than a hospital-based robotic facility, NeuroFicio brings
         specialist-guided, technology-supported recovery directly into the home — including for international
-        diaspora families managing a loved one&apos;s recovery remotely.
+        patients managing a loved one&apos;s recovery remotely.
       </p>
 
-      <h2>Why Families Choose Neuroficio</h2>
+      <h2>Why Families Choose NeuroFicio</h2>
       <ul>
         {WHY_NEUROFICIO.map((item) => (
           <li key={item}>{item}</li>
@@ -205,7 +205,7 @@ export default function ArticleBody() {
 
       <div className="article-cta">
         <h3>Ready to explore technology-guided neuro-rehabilitation at home?</h3>
-        <p>Book a free assessment with Neuroficio&apos;s specialists — combining home-based physiotherapy,
+        <p>Book a free assessment with NeuroFicio&apos;s specialists — combining home-based physiotherapy,
         technology-guided practice, and community support for stroke, paralysis, and movement disorder recovery.</p>
         <Link className="btn btn-primary" href="/#contact">Book your free assessment →</Link>
       </div>
@@ -229,7 +229,7 @@ export default function ArticleBody() {
       </p>
       <p>
         With home-based specialist care, technology-guided recovery tools, and personalised, regularly-updated
-        treatment plans, Neuroficio offers stroke, paralysis, and movement disorder patients in Hyderabad — and
+        treatment plans, NeuroFicio offers stroke, paralysis, and movement disorder patients in Hyderabad — and
         internationally by video — a comprehensive path toward recovery, starting with a free assessment.
       </p>
 

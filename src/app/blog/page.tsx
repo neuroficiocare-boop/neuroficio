@@ -5,9 +5,9 @@ import SiteFooter from '@/components/SiteFooter';
 import { blogPosts } from '@/content/blog-posts';
 
 export const metadata: Metadata = {
-  title: 'Blog & Resources | Neuroficio',
+  title: 'Blog & Resources | NeuroFicio',
   description:
-    'Guides on stroke, brain injury, spinal cord injury and Parkinson’s recovery from Neuroficio’s home-based neuro rehabilitation team in Hyderabad.',
+    'Guides on stroke, brain injury, spinal cord injury and Parkinson’s recovery from NeuroFicio’s home-based neuro rehabilitation team in Hyderabad.',
 };
 
 export default function BlogIndexPage() {
@@ -18,7 +18,7 @@ export default function BlogIndexPage() {
       <section className="page-hero">
         <div className="container">
           <span className="eyebrow" style={{ color: '#5EEAD4' }}>Blog &amp; Resources</span>
-          <h1 style={{ color: 'white', maxWidth: 760 }}>Guides on neuro recovery, from the specialists behind Neuroficio.</h1>
+          <h1 style={{ color: 'white', maxWidth: 760 }}>Guides on neuro recovery, from the specialists behind NeuroFicio.</h1>
           <p className="lead" style={{ color: 'rgba(255,255,255,0.7)', maxWidth: 600, marginTop: 18 }}>
             Practical, evidence-informed reading on stroke, brain injury, spinal cord injury and Parkinson&apos;s
             recovery — written by Nero Ficio Physiotherapists.

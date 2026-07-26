@@ -44,8 +44,8 @@ export default function SiteFooter() {
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© 2026 Neuroficio, a Therapy Partners service. All rights reserved.</span>
-          <span>Hyderabad, India · Remote consultations worldwide</span>
+          <span>© 2026 NeuroFicio, a Therapy Partners service. All rights reserved.</span>
+          <span>Nallagandla, Hyderabad · Remote consultations worldwide</span>
         </div>
       </div>
     </footer>

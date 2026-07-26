@@ -560,6 +560,9 @@ p{ color: var(--ink-soft); }
   display:flex; align-items:center; justify-content:center;
   font-weight:700; font-size:15px;
 }
+.intl-testimonial-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+@media (max-width:760px){ .intl-testimonial-grid{ grid-template-columns:1fr; } }
+.intl-testimonial-card{ padding:32px; }
 
 /* ============================================
    FINAL CTA
@@ -630,6 +633,7 @@ p{ color: var(--ink-soft); }
 .group-icon{ font-size:34px; margin-bottom:14px; }
 .group-card h3{ font-size:17px; margin-bottom:8px; }
 .group-meta{ font-size:12.5px; color:var(--teal-dark); font-weight:600; margin-top:14px; }
+.platform-grid{ grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); }
 
 .how-groups-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:32px; }
 @media (max-width:760px){ .how-groups-grid{ grid-template-columns:1fr; } }
