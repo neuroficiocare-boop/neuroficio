@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import Link from 'next/link';
 
 type PageKey = 'home' | 'services' | 'equipment' | 'community' | 'about' | 'contact';
 const ORDER: PageKey[] = ['home', 'services', 'equipment', 'community', 'about', 'contact'];
@@ -867,11 +868,11 @@ function PageContact({ goTo }: { goTo: (k: PageKey) => void }) {
                   </div>
                   <div><strong>Call us</strong><span>+91 40 1234 5678</span></div>
                 </a>
-                <a href="mailto:care@neuroficio.com" className="contact-row">
+                <a href="mailto:neuroficio.care@gmail.com" className="contact-row">
                   <div className="contact-row-icon" style={{ background: '#F0EEFD' }}>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6D28D9" strokeWidth="2"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="M22 6l-10 7L2 6" /></svg>
                   </div>
-                  <div><strong>Email</strong><span>care@neuroficio.com</span></div>
+                  <div><strong>Email</strong><span>neuroficio.care@gmail.com</span></div>
                 </a>
               </div>
               <div className="card side-card">
@@ -931,6 +932,7 @@ export default function App() {
             {navLinks.map(l => (
               <a key={l.key} href={`#${l.key}`} className={currentPage === l.key ? 'active' : ''} onClick={(e) => { e.preventDefault(); goTo(l.key); }}>{l.label}</a>
             ))}
+            <Link href="/blog">Blog</Link>
           </div>
           <div className="nav-cta">
             <a href="tel:+914012345678" className="nav-phone">
@@ -954,6 +956,7 @@ export default function App() {
         {navLinks.map(l => (
           <a key={l.key} href={`#${l.key}`} onClick={(e) => { e.preventDefault(); goTo(l.key); }}>{l.label}</a>
         ))}
+        <Link href="/blog" onClick={() => setMobileOpen(false)}>Blog</Link>
         <div style={{ marginTop: 32 }}>
           <button className="btn btn-primary btn-block" onClick={() => goTo('contact')}>Book Free Assessment</button>
         </div>
@@ -993,6 +996,7 @@ export default function App() {
                 <li><a href="#equipment" onClick={(e) => { e.preventDefault(); goTo('equipment'); }}>Equipment &amp; tools</a></li>
                 <li><a href="#community" onClick={(e) => { e.preventDefault(); goTo('community'); }}>Support groups</a></li>
                 <li><a href="#about" onClick={(e) => { e.preventDefault(); goTo('about'); }}>Our story</a></li>
+                <li><Link href="/blog">Blog &amp; resources</Link></li>
               </ul>
             </div>
             <div>
@@ -1009,7 +1013,7 @@ export default function App() {
               <ul>
                 <li><a href="tel:+914012345678">+91 40 1234 5678</a></li>
                 <li><a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer">WhatsApp us</a></li>
-                <li><a href="mailto:care@neuroficio.com">care@neuroficio.com</a></li>
+                <li><a href="mailto:neuroficio.care@gmail.com">neuroficio.care@gmail.com</a></li>
                 <li><a href="#contact" onClick={(e) => { e.preventDefault(); goTo('contact'); }}>Book free assessment →</a></li>
               </ul>
             </div>

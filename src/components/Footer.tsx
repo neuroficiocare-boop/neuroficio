@@ -37,7 +37,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-2.5 text-white/50">
                 <Mail size={14} className="text-[#00B4D8] flex-shrink-0" />
-                hello@neuroficio.com
+                neuroficio.care@gmail.com
               </div>
             </div>
           </div>
