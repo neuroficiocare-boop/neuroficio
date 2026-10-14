@@ -9,7 +9,10 @@ export const metadata: Metadata = {
  title: { default: 'NeuroFicio | Neurological Rehabilitation', template: '%s | NeuroFicio' },
  description: 'Home neurological physiotherapy in Hyderabad and enquiries about remote rehabilitation for patients and caregivers.',
  robots: { index: true, follow: true },
- verification: { google: 'ni4j0SFsHZZb-M-67jsIl413Jm4Y42ON9v5mtdUCEHE' },
+ verification: {
+  google: 'ni4j0SFsHZZb-M-67jsIl413Jm4Y42ON9v5mtdUCEHE',
+  other: { 'msvalidate.01': '21982F0DBD5FC7766D3599302CBAFB11' },
+ },
 };
 const organization = { '@context': 'https://schema.org', '@type': 'MedicalBusiness', '@id': `${SITE_URL}/#organization`,
  name: 'NeuroFicio', url: SITE_URL, telephone: '+918341471837', email: 'neuroficio.care@gmail.com',
