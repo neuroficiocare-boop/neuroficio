@@ -46,3 +46,7 @@ Run `npm run build`, `node scripts/verify-seo.mjs` and `node scripts/verify-pati
 These are local repository changes. No GitHub push or production deployment is part of this delivery. After deployment, submit the sitemap and inspect representative articles in Search Console. Track eligible enquiries and booked assessments by article and country alongside organic impressions; keyword targeting alone does not guarantee traffic or patients.
 
 Completed checks: production build, TypeScript, SEO checks for all 29 public content URLs, article checks for all 20 articles, and local HTTP checks passed. Browser visual and interactive QA could not run because no browser surface is available in this environment. No live WhatsApp message was sent.
+
+## Clinic-specific editorial correction
+
+The guides now focus on enquiries with NeuroFicio. Clinic-comparison, provider-search and external support-directory advice has been removed. Medicare Care Compare, Headway directory and BIA directory links were removed. Articles about paediatric care, aquatic therapy and robotic equipment clarify NeuroFicio service scope without booking or advertising treatment elsewhere. Clinical sources and instructions to maintain necessary treating-team or urgent medical care remain. Existing article URLs are retained.

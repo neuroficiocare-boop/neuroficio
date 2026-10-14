@@ -17,6 +17,7 @@ for (const route of routes) {
  assert.match(html, /<meta name="description" content="[^"]+"/);
  assert.match(html, /property="og:image"/);
  assert.match(html, /name="twitter:card" content="summary_large_image"/);
+ assert.match(html, /<meta name="google-site-verification" content="ni4j0SFsHZZb-M-67jsIl413Jm4Y42ON9v5mtdUCEHE"/);
  assert.match(html, /<main/);
  assert.match(html, /href="\/contact"/);
  for (const match of html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)) JSON.parse(match[1]);
