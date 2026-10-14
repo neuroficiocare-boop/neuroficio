@@ -867,3 +867,32 @@ p{ color: var(--ink-soft); }
   font-size:13.5px; color: var(--ink-soft); background: var(--stone);
   border-radius: var(--radius-sm); padding:18px 20px; margin-top:44px;
 }
+
+/* Accessible patient questions and keyboard navigation. */
+.skip-link { position: absolute; left: 16px; top: -100px; z-index: 1000; background: white; color: #0A2540; padding: 12px; }
+.skip-link:focus { top: 16px; }
+.article-faq summary { cursor: pointer; padding: 12px 0; color: var(--navy); }
+:focus-visible { outline: 3px solid #0D9488; outline-offset: 4px; }
+.serif { font-family: var(--font-serif), Georgia, serif; }
+
+.condition-card a { color: inherit; text-decoration: underline; text-underline-offset: 4px; }
+.blog-card h2 { font-size: 24px; }
+
+.blog-topic-nav { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 40px; }
+.blog-topic-nav a { padding: 10px 16px; border: 1px solid var(--line); border-radius: 24px; color: var(--navy); background: var(--stone); }
+.blog-topic { margin-bottom: 56px; }
+.blog-topic > h2 { margin-bottom: 24px; scroll-margin-top: 100px; }
+.article-toc { padding: 22px; border: 1px solid var(--line); border-radius: var(--radius-md); margin: 28px 0; }
+.article-toc h2 { margin-top: 0; }
+.article-body h2[id], #care-enquiry { scroll-margin-top: 100px; }
+.article-source-note { font-size: 13px; line-height: 1.6; color: var(--ink-soft); }
+.article-urgent { padding: 20px; border-left: 4px solid #B45309; background: #FFFBEB; color: #78350F; margin-bottom: 24px; }
+.article-enquiry { max-width: 1000px; margin: 56px auto; padding: 32px; border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--stone); display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.article-enquiry p { margin-bottom: 18px; line-height: 1.65; }
+.article-enquiry h2 { font-size: 26px; margin-bottom: 16px; }
+.article-enquiry form { padding: 24px; border-radius: var(--radius-md); background: var(--white); }
+.article-related { margin: 40px auto; max-width: 1100px; }
+.article-related > h2 { margin-bottom: 24px; }
+.article-table-wrap { overflow-x: auto; }
+.article-table caption { text-align: left; margin-bottom: 10px; font-weight: 600; }
+@media (max-width: 760px) { .article-enquiry { grid-template-columns: 1fr; padding: 20px; } }

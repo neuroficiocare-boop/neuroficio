@@ -1,0 +1,32 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
+const base = (process.env.NEXT_PUBLIC_SITE_URL || 'https://www.neuroficio.com').replace(/\/$/, '');
+const guides = JSON.parse(readFileSync('src/content/patient-guides.json', 'utf8'));
+const routes = ['/', '/services', '/international', '/equipment', '/second-opinion', '/community', '/about', '/contact', '/blog', '/blog/robotic-neuro-rehabilitation-2026', ...guides.map(g => `/blog/${g.slug}`)];
+const titles = new Set();
+for (const route of routes) {
+ const file = path.join('.next/server/app', route === '/' ? 'index.html' : `${route.slice(1)}.html`);
+ const html = readFileSync(file, 'utf8');
+ const title = html.match(/<title>(.*?)<\/title>/s)?.[1];
+ assert.ok(title, `${route}: title missing`);
+ assert.ok(!titles.has(title), `${route}: duplicate title`); titles.add(title);
+ assert.equal((html.match(/<h1[ >]/g) || []).length, 1, `${route}: expected one H1`);
+ const canonical = html.match(/<link rel="canonical" href="([^"]+)"/)?.[1];
+ assert.equal(canonical?.replace(/\/$/, ""), `${base}${route}`.replace(/\/$/, ""), `${route}: incorrect canonical`);
+ assert.match(html, /<meta name="description" content="[^"]+"/);
+ assert.match(html, /property="og:image"/);
+ assert.match(html, /name="twitter:card" content="summary_large_image"/);
+ assert.match(html, /<main/);
+ assert.match(html, /href="\/contact"/);
+ for (const match of html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)) JSON.parse(match[1]);
+ assert.ok(!html.includes('Nero Ficio'), `${route}: old author typo`);
+ assert.ok(!html.includes('Request received'), `${route}: false submission message`);
+ console.log(`PASS ${route}: initial HTML, title, H1, canonical, social metadata, links and schema`);
+}
+const robots = readFileSync('.next/server/app/robots.txt.body', 'utf8');
+assert.ok(robots.includes(`Sitemap: ${base}/sitemap.xml`));
+const sitemap = readFileSync('.next/server/app/sitemap.xml.body', 'utf8');
+for (const route of routes) assert.ok(sitemap.includes(`<loc>${base}${route}</loc>`), `${route}: missing from sitemap`);
+assert.equal((sitemap.match(/<loc>/g) || []).length, routes.length);
+console.log(`PASS robots and sitemap: all ${routes.length} public content URLs`);

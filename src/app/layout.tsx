@@ -1,26 +1,19 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"], display: "swap" });
-
+import type { Metadata } from 'next';
+import { Inter, Source_Serif_4 } from 'next/font/google';
+import { SITE_URL, jsonLd } from '@/lib/seo';
+import './globals.css';
+const inter = Inter({ subsets: ['latin'], display: 'swap' });
+const serif = Source_Serif_4({ subsets: ['latin'], display: 'swap', variable: '--font-serif' });
 export const metadata: Metadata = {
-  title: "NeuroFicio — Neuro Rehabilitation at Home",
-  description:
-    "Specialist stroke, brain injury, spinal cord injury and Parkinson's rehabilitation — delivered at home, guided by technology, backed by community. First assessment and first session are completely free.",
+ metadataBase: new URL(SITE_URL),
+ title: { default: 'NeuroFicio | Neurological Rehabilitation', template: '%s | NeuroFicio' },
+ description: 'Home neurological physiotherapy in Hyderabad and enquiries about remote rehabilitation for patients and caregivers.',
+ robots: { index: true, follow: true },
 };
-
+const organization = { '@context': 'https://schema.org', '@type': 'MedicalBusiness', '@id': `${SITE_URL}/#organization`,
+ name: 'NeuroFicio', url: SITE_URL, telephone: '+918341471837', email: 'neuroficio.care@gmail.com',
+ address: { '@type': 'PostalAddress', streetAddress: 'Second floor, Huda Residential Layout, Plot 118, above Frills Boutique, Nallagandla', addressLocality: 'Hyderabad', addressRegion: 'Telangana', postalCode: '500019', addressCountry: 'IN' } };
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en" className={inter.className}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body>{children}</body>
-    </html>
-  );
+ return <html lang="en" className={`${inter.className} ${serif.variable}`}><body>
+ <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(organization) }} />{children}</body></html>;
 }
