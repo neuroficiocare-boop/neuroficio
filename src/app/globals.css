@@ -2100,3 +2100,14 @@ p{
   bottom:8px;
   right:8px;
   padding:4px 6px}
+
+/* Original NeuroFicio logo lockup. */
+.brand { gap:10px; white-space:nowrap; }
+.brand-symbol { width:30px; height:30px; border:0; border-radius:0; background:transparent; }
+.brand-symbol svg { width:30px; height:30px; flex-shrink:0; }
+.brand-word { color:#061829; font-size:21px; font-weight:800; letter-spacing:-.02em; line-height:1.2; }
+.brand-word>span { color:#0D9488; font-weight:700; }
+.site-footer .brand { gap:8px; }
+.site-footer .brand-symbol, .site-footer .brand-symbol svg { width:26px; height:26px; }
+.site-footer .brand-word { color:white; font-size:19px; }
+.site-footer .brand-word>span { color:#5EEAD4; }
