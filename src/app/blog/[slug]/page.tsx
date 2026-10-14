@@ -9,6 +9,8 @@ import { getPatientGuide } from '@/content/patient-guides';
 import PatientGuideBody from '@/components/PatientGuideBody';
 import EnquiryForm from '@/components/EnquiryForm';
 import Link from 'next/link';
+import Image from 'next/image';
+import UiIcon from '@/components/UiIcon';
 
 import { SITE_URL, pageMetadata, jsonLd } from '@/lib/seo';
 
@@ -44,6 +46,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   const relatedPosts = relatedSlugs.map(getBlogPost).filter((p): p is NonNullable<typeof p> => !!p);
 
   const url = `${SITE_URL}/blog/${post.slug}`;
+  const imageKind = post.category === 'Caregiver support' ? 'family' : post.category === 'Choosing care' ? 'home' : post.category === 'Costs and assessment' ? 'online' : 'movement';
 
   const articleSchema = {
     '@context': 'https://schema.org',
@@ -96,24 +99,18 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         { '@type': 'ListItem', position: 3, name: post.title, item: url },
       ] }) }} />
       <main id="main-content">
-      <section className="page-hero" style={{ paddingBottom: 48 }}>
-        <div className="container">
-          <span className="eyebrow" style={{ color: '#5EEAD4' }}>
-            {post.tags[0] ?? 'Neuro Recovery'}
-          </span>
-          <h1 style={{ color: 'white', maxWidth: 800 }}>{post.title}</h1>
-          <p style={{ color: 'rgba(255,255,255,0.65)', marginTop: 18, fontSize: 14.5 }}>
-            By {post.author} · {new Date(post.date).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })} · {post.readTime} | Updated {post.modified || post.date}
-          </p>
+      <section className="article-header"><div className="container">
+        <nav className="breadcrumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span><Link href="/blog">Patient guides</Link><span>/</span><span>{post.category}</span></nav>
+        <div className="article-header-layout"><div><span className="eyebrow">{post.category}</span><h1>{post.title}</h1><p className="article-summary">{post.excerpt}</p>
+          <div className="article-meta"><span>By {post.author}</span><time dateTime={post.date}>{new Date(post.date).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</time><span>{post.readTime}</span>{post.modified && <span>Updated {post.modified}</span>}</div>
+        </div><aside className="article-header-note">{slug !== 'brain-injury-swelling-recovery' && <figure className="editorial-image"><Image src={`/images/${imageKind}-care-editorial.webp`} alt="An illustrative conversation about care at home" fill sizes="(max-width: 980px) 1px, 260px" /><figcaption>Illustrative care setting</figcaption></figure>}<UiIcon name="book" size={27} /><p>Information to help you understand your options and prepare for a care conversation.</p><a className="text-link" href="#care-enquiry">Ask about care <UiIcon name="arrow" size={17} /></a></aside></div>
+      </div></section>
+      <section className="article-reading-section"><div className="container">
+        <div className="article-content-grid"><div>{guide ? <PatientGuideBody guide={guide} /> : Body && <Body />}</div>
+          <aside className="article-sidebar"><span className="eyebrow">Your next step</span><h2>Make it about your care.</h2><p>{guide?.cta || 'Ask about home physiotherapy, online support and equipment guidance.'}</p><a className="btn btn-dark" href="#care-enquiry">Make a care enquiry <UiIcon name="arrow" size={15} /></a><a href="tel:+918341471837"><UiIcon name="phone" size={14} /> +91 83414 71837</a></aside>
         </div>
-      </section>
-
-      <section className="section">
-        <div className="container">
-          <nav aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/blog">Patient guides</a> / {post.title}</nav>
-          {guide ? <PatientGuideBody guide={guide} /> : Body && <Body />}
           <section id="care-enquiry" className="article-enquiry" aria-label="Care enquiry form">
-            <div><span className="eyebrow">Care enquiries</span><h2>Ask NeuroFicio about your care options</h2>
+            <div><span className="eyebrow">Care enquiries</span><h2>A clearer next step starts with you.</h2>
               <p>{guide?.cta || 'Ask about home or remote physiotherapy and rehabilitation equipment guidance.'}</p>
               <p>Home visits are based in Hyderabad. Remote suitability and availability are confirmed for your country. Ask which services are currently offered.</p>
               <p><Link href="/services">Home rehabilitation</Link> | <Link href="/international">International enquiries</Link> | <Link href="/contact">All contact options</Link></p>
@@ -122,7 +119,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             <EnquiryForm key={post.slug} idPrefix="article-enquiry" defaultService={guide?.service || 'Rehabilitation equipment'} source={`${post.title} (${SITE_URL}/blog/${post.slug})`} />
           </section>
           <section className="article-related" aria-labelledby="related-guides"><h2 id="related-guides">Related patient guides</h2>
-            <div className="blog-grid">{relatedPosts.map(related => <Link className="card blog-card" key={related.slug} href={`/blog/${related.slug}`}><h3>{related.title}</h3><p>{related.excerpt}</p></Link>)}</div>
+            <div className="guide-card-grid">{relatedPosts.map(related => <Link className="guide-card" key={related.slug} href={`/blog/${related.slug}`}><div className="guide-card-top"><span className="topic-label">{related.category}</span><UiIcon name="diagonal" size={21} /></div><h3>{related.title}</h3><p>{related.excerpt}</p><span className="guide-card-bottom">{related.readTime}<span>Read the guide <UiIcon name="arrow" size={16} /></span></span></Link>)}</div>
           </section>
         </div>
       </section>
