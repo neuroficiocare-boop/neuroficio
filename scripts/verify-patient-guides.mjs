@@ -9,8 +9,8 @@ for (const guide of guides) {
  const html = readFileSync(`.next/server/app/blog/${guide.slug}.html`, 'utf8');
  assert.ok(index.includes(`href="/blog/${guide.slug}"`), `${guide.slug}: absent from blog index`);
  assert.ok(html.includes('id="care-enquiry"'), `${guide.slug}: enquiry target missing`);
- assert.ok(html.includes('action="https://wa.me/918341471837"'), `${guide.slug}: form not connected to WhatsApp`);
- assert.ok(html.includes('id="article-enquiry-location"'), `${guide.slug}: enquiry location field missing`);
+ assert.ok(html.includes('Review enquiry in WhatsApp'), `${guide.slug}: WhatsApp review action missing`);
+ assert.ok(html.includes('id="article-enquiry-patient-city"'), `${guide.slug}: enquiry location field missing`);
  assert.ok(html.includes('id="article-enquiry-service"'), `${guide.slug}: service field missing`);
  for (const related of guide.related) { assert.ok(slugs.has(related), `${guide.slug}: related slug missing`); assert.ok(html.includes(`href="/blog/${related}"`)); }
  for (const section of guide.sections) {
@@ -23,11 +23,12 @@ for (const guide of guides) {
  assert.deepEqual(faq.mainEntity.map(f => [f.name, f.acceptedAnswer.text]), guide.faqs.map(f => [f.question, f.answer]), `${guide.slug}: FAQs do not match this article`);
  const article = schemas.find(s => s['@type'] === 'BlogPosting');
  assert.equal(article.headline, guide.title);
- const selected = html.match(/<option[^>]*selected=""[^>]*>(.*?)<\/option>/)?.[1];
+ const conditionSelect = html.match(/<select[^>]*name="condition"[^>]*>(.*?)<\/select>/s)?.[1] || '';
+ const selected = conditionSelect.match(/<option[^>]*selected=""[^>]*>(.*?)<\/option>/)?.[1];
  const decode = text => text?.replace(/&#x27;|&#39;/g, "'").replace(/&amp;/g, '&');
  assert.equal(decode(selected), guide.service, `${guide.slug}: inappropriate default service`);
  console.log(`PASS ${guide.slug}: index, related links, sources, matched FAQs and contextual enquiry form`);
 }
 const old = readFileSync('.next/server/app/blog/robotic-neuro-rehabilitation-2026.html', 'utf8');
-assert.ok(old.includes('id="care-enquiry"') && old.includes('action="https://wa.me/918341471837"'));
+assert.ok(old.includes('id="care-enquiry"') && old.includes('Review enquiry in WhatsApp'));
 console.log(`PASS ${guides.length + 1} articles: all have enquiry forms; new guides have distinct body paragraphs`);

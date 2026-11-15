@@ -25,7 +25,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const post = getBlogPost(slug);
-  if (!post) return {};
+  if (!post) notFound();
 
   return {
     ...pageMetadata(post.title, post.excerpt, `/blog/${post.slug}`),
@@ -55,10 +55,14 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     description: post.excerpt,
     datePublished: post.date,
     dateModified: post.modified || post.date,
+    image: [`${SITE_URL}/images/${imageKind}-care-editorial.webp`],
+    inLanguage: 'en',
     author: { '@type': 'Organization', name: post.author },
     publisher: {
       '@type': 'MedicalBusiness',
       name: 'NeuroFicio',
+      '@id': `${SITE_URL}/#organization`,
+      logo: { '@type': 'ImageObject', url: `${SITE_URL}/brand/neuroficio-logo.webp`, width: 900, height: 295 },
       url: SITE_URL,
       telephone: '+91-8341471837',
       address: {
@@ -103,7 +107,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
         <nav className="breadcrumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span>/</span><Link href="/blog">Patient guides</Link><span>/</span><span>{post.category}</span></nav>
         <div className="article-header-layout"><div><span className="eyebrow">{post.category}</span><h1>{post.title}</h1><p className="article-summary">{post.excerpt}</p>
           <div className="article-meta"><span>By {post.author}</span><time dateTime={post.date}>{new Date(post.date).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })}</time><span>{post.readTime}</span>{post.modified && <span>Updated {post.modified}</span>}</div>
-        </div><aside className="article-header-note">{slug !== 'brain-injury-swelling-recovery' && <figure className="editorial-image"><Image src={`/images/${imageKind}-care-editorial.webp`} alt="An illustrative conversation about care at home" fill sizes="(max-width: 980px) 1px, 260px" /><figcaption>Illustrative care setting</figcaption></figure>}<UiIcon name="book" size={27} /><p>Patient guidance from NeuroFicio to help you prepare for a conversation with our team.</p><a className="text-link" href="#care-enquiry">Ask about care <UiIcon name="arrow" size={17} /></a></aside></div>
+        </div><aside className="article-header-note">{slug !== 'brain-injury-swelling-recovery' && <figure className="editorial-image"><Image src={`/images/${imageKind}-care-editorial.webp`} alt="An illustrative conversation about care at home" fill sizes="(max-width: 980px) 1px, 260px" /></figure>}<UiIcon name="book" size={27} /><p>Patient guidance from NeuroFicio to help you prepare for a conversation with our team.</p><a className="text-link" href="#care-enquiry">Ask about care <UiIcon name="arrow" size={17} /></a></aside></div>
       </div></section>
       <section className="article-reading-section"><div className="container">
         <div className="article-content-grid"><div>{guide ? <PatientGuideBody guide={guide} /> : Body && <Body />}</div>

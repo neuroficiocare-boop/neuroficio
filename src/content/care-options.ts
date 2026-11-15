@@ -5,8 +5,10 @@ export const conditions = [
  { id: 'parkinsons', number: '04', title: "Parkinson's physiotherapy", description: 'Help with movement, balance and staying active in everyday life.', icon: 'heart', guide: 'aquatic-physiotherapy-parkinsons' },
 ] as const;
 export const careOptions = [
- { href: '/services', title: 'Home rehabilitation', detail: 'In-person care in Hyderabad', icon: 'home' },
- { href: '/international', title: 'Online rehabilitation', detail: 'Enquire from your country', icon: 'globe' },
+ { href: '/services', title: 'Home care in India', detail: 'Home rehabilitation in Hyderabad', icon: 'home' },
+ { href: '/nri', title: 'Arranging care from abroad', detail: 'For a parent or relative in India', icon: 'users' },
+ { href: '/international', title: 'Care outside India', detail: 'International in-person programmes', icon: 'globe' },
+ { href: '/remote', title: 'Remote guidance', detail: 'Video support, where suitable', icon: 'monitor' },
  { href: '/equipment', title: 'Equipment guidance', detail: 'Support that fits your needs', icon: 'accessibility' },
  { href: '/second-opinion', title: 'Second opinions', detail: 'Clarity before a care decision', icon: 'clipboard' },
  { href: '/community', title: 'Caregiver support', detail: 'Guidance for the people beside you', icon: 'users' },

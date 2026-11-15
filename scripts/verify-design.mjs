@@ -9,7 +9,7 @@ assert.equal(filterGuides(summaries, 'Medicare', 'Stroke recovery').length, 0);
 assert.equal(filterGuides(summaries, 'a topic that is not in the library', 'All topics').length, 0);
 assert.equal(filterGuides(summaries, '', 'All topics').length, data.length);
 console.log('PASS guide search: case, spaces, terms, topic combination and empty results');
-const routes = ['/', '/services', '/international', '/equipment', '/second-opinion', '/community', '/about', '/contact', '/blog', '/blog/robotic-neuro-rehabilitation-2026', ...data.map(g => `/blog/${g.slug}`)];
+const routes = ['/', '/services', '/international', '/nri', '/remote', '/privacy', '/equipment', '/second-opinion', '/community', '/about', '/contact', '/blog', '/blog/robotic-neuro-rehabilitation-2026', ...data.map(g => `/blog/${g.slug}`)];
 const pages = new Map(routes.map(route => [route, readFileSync(`.next/server/app/${route === '/' ? 'index' : route.slice(1)}.html`, 'utf8')]));
 for (const [route, html] of pages) {
  const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(m => m[1]);
@@ -19,6 +19,10 @@ for (const [route, html] of pages) {
  for (const anchor of html.matchAll(/<a\b[^>]*href="([^"]+)"/g)) {
   const href = anchor[1]; if (!href.startsWith('/') && !href.startsWith('#')) continue;
   const url = new URL(href, `https://example.com${route}`);
+  if (url.pathname.startsWith('/brochures/')) {
+   assert.ok(existsSync(`public${url.pathname}`), `${route}: missing brochure ${href}`);
+   continue;
+  }
   assert.ok(pages.has(url.pathname), `${route}: unknown destination ${href}`);
   if (url.hash) assert.ok(pages.get(url.pathname).includes(`id="${decodeURIComponent(url.hash.slice(1))}"`), `${route}: missing target ${href}`);
  }
