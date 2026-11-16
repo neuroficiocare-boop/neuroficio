@@ -1,10 +1,11 @@
 import { type PatientGuide } from '@/content/patient-guides';
 export default function PatientGuideBody({ guide }: { guide: PatientGuide }) {
+ const checkedDate = new Date(`${guide.sourcesChecked || '2026-10-14'}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
  return <article className="article-body">
   {guide.urgent && <aside className="article-urgent" aria-label="Urgent care information">{guide.urgent}</aside>}
   <div className="article-callout"><strong>The short answer</strong><p>{guide.answer}</p></div>
   {guide.intro.map(p => <p className="lead" key={p}>{p}</p>)}
-  <p><a className="btn btn-dark btn-sm" href="#care-enquiry">Ask about rehabilitation care</a></p>
+  <p><a className="btn btn-dark btn-sm" href="#care-enquiry">Ask about rehabilitation care</a>{guide.servicePath && <> <a href={guide.servicePath}>Explore the related NeuroFicio service</a></>}</p>
   <nav className="article-toc" aria-label="In this guide"><h2>In this guide</h2><ul>
    {guide.sections.map(s => <li key={s.id}><a href={`#${s.id}`}>{s.heading}</a></li>)}
    <li><a href="#article-faq">Patient questions</a></li><li><a href="#care-enquiry">Care enquiry</a></li>
@@ -24,7 +25,7 @@ export default function PatientGuideBody({ guide }: { guide: PatientGuide }) {
   </section>
   <section aria-labelledby="article-sources"><h2 id="article-sources">Sources and further reading</h2>
    <ul>{guide.sources.map(source => <li key={source.url}><a href={source.url}>{source.title}</a></li>)}</ul>
-   <p className="article-source-note">Sources checked on 14 October 2026. Written by the NeuroFicio editorial team; no named clinical reviewer is represented here.</p>
+   <p className="article-source-note">Sources checked on {checkedDate}. Written by the NeuroFicio editorial team; no named clinical reviewer is represented here.</p>
   </section>
   <p className="article-disclaimer">General information, not an individual diagnosis or treatment plan. Ask the relevant qualified professional about your needs. For sudden or worsening neurological symptoms, seek urgent local medical care.</p>
  </article>;

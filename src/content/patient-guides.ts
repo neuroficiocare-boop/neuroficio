@@ -1,6 +1,7 @@
 import data from './patient-guides.json';
 export type PatientGuide = {
  slug: string; title: string; category: string; excerpt: string; answer: string; intro: string[];
+ date?: string; modified?: string; sourcesChecked?: string; servicePath?: string;
  sections: { id: string; heading: string; paragraphs: string[]; bullets?: string[]; sources?: number[];
   table?: { headers: string[]; rows: string[][] } }[];
  faqs: { question: string; answer: string }[];

@@ -3,8 +3,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import UiIcon from './UiIcon';
 import { filterGuides, type GuideSummary } from '@/lib/guide-search';
-const topics = ['All topics', 'Choosing care', 'Costs and assessment', 'Stroke recovery', 'Brain injury', 'Caregiver support', 'Specialised therapies'];
 export default function PatientGuideLibrary({ guides }: { guides: GuideSummary[] }) {
+ const topics = ['All topics', ...new Set(guides.map(guide => guide.category))];
  const [query, setQuery] = useState('');
  const [category, setCategory] = useState('All topics');
  const results = filterGuides(guides, query, category);

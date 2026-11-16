@@ -29,12 +29,12 @@ const existingPosts: BlogPost[] = [
 
 export const blogPosts: BlogPost[] = [
  ...patientGuides.map(guide => ({
-  slug: guide.slug, title: guide.title, excerpt: guide.excerpt, date: '2026-10-14',
-  ...(guide.slug === 'speech-recovery-after-stroke-aphasia' ? { modified: '2026-11-16' } : {}),
+  slug: guide.slug, title: guide.title, excerpt: guide.excerpt, date: guide.date || '2026-10-14',
+  ...(guide.modified ? { modified: guide.modified } : {}),
   author: 'NeuroFicio editorial team', category: guide.category, tags: [guide.category],
   readTime: `${Math.max(3, Math.ceil(guideWordCount(guide) / 200))} min read`,
  })), ...existingPosts,
-];
+].sort((a, b) => (b.date).localeCompare(a.date));
 
 export function getBlogPost(slug: string): BlogPost | undefined {
   return blogPosts.find((p) => p.slug === slug);

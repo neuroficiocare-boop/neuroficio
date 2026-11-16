@@ -23,6 +23,13 @@ for (const guide of guides) {
  assert.deepEqual(faq.mainEntity.map(f => [f.name, f.acceptedAnswer.text]), guide.faqs.map(f => [f.question, f.answer]), `${guide.slug}: FAQs do not match this article`);
  const article = schemas.find(s => s['@type'] === 'BlogPosting');
  assert.equal(article.headline, guide.title);
+ assert.equal(article.datePublished, guide.date || '2026-10-14', `${guide.slug}: incorrect publication date`);
+ assert.equal(article.dateModified, guide.modified || guide.date || '2026-10-14', `${guide.slug}: incorrect modification date`);
+ if (guide.sourcesChecked) {
+  const visibleDate = new Date(`${guide.sourcesChecked}T12:00:00Z`).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+  assert.ok(html.replace(/<!--.*?-->/gs, '').includes(`Sources checked on ${visibleDate}`), `${guide.slug}: source check date absent`);
+ }
+ if (guide.servicePath) assert.ok(html.includes(`href="${guide.servicePath}"`), `${guide.slug}: service link missing`);
  const conditionSelect = html.match(/<select[^>]*name="condition"[^>]*>(.*?)<\/select>/s)?.[1] || '';
  const selected = conditionSelect.match(/<option[^>]*selected=""[^>]*>(.*?)<\/option>/)?.[1];
  const decode = text => text?.replace(/&#x27;|&#39;/g, "'").replace(/&amp;/g, '&');
