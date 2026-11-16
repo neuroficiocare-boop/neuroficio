@@ -717,8 +717,8 @@
         "id": "service-match",
         "heading": "Choosing a service and knowing its limits",
         "paragraphs": [
-          "When contacting NeuroFicio, explain any speech or communication difficulties alongside your movement goals. Ask our team which services are currently available and whether speech-language coordination is appropriate. Our physiotherapy appointments should not be assumed to include a dedicated intensive aphasia programme.",
-          "NeuroFicio enquiries can establish its available services and any relevant coordination options. No dedicated speech-language or intensive aphasia programme is confirmed by this article. Sudden new speech difficulty needs urgent medical care, not a routine booking."
+          "NeuroFicio provides speech and swallowing rehabilitation through appropriately qualified specialists, subject to location, clinical suitability and specialist availability. Tell the team about communication, speech or swallowing needs so the relevant specialist assessment and coordination can be discussed.",
+          "Confirm the professional, assessment format, goals, session plan and fees before booking. A dedicated intensive aphasia programme requires individual agreement; it is not automatically included in a physiotherapy appointment. Sudden new speech difficulty needs urgent medical care, not a routine booking."
         ]
       }
     ],
@@ -744,7 +744,7 @@
       "first-neuro-physiotherapy-assessment"
     ],
     "service": "Stroke rehabilitation",
-    "cta": "Ask which rehabilitation services are available and whether speech-language coordination is appropriate."
+    "cta": "Ask about speech and swallowing rehabilitation, specialist availability and coordinated care for your location."
   },
   {
     "slug": "balance-problems-after-tbi-walking-aids",

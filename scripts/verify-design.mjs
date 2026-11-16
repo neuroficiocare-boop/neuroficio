@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { filterGuides } from '../src/lib/guide-search.ts';
+import { serviceCategories, internationalOptions } from '../src/content/care-options.ts';
 const data = JSON.parse(readFileSync('src/content/patient-guides.json', 'utf8'));
 const summaries = data.map(g => ({ ...g, readTime: '3 min read' }));
 assert.equal(filterGuides(summaries, '  FOOT DROP  ', 'All topics')[0].slug, 'foot-drop-after-stroke');
@@ -29,3 +30,24 @@ for (const [route, html] of pages) {
 }
 for (const name of ['home', 'online', 'family', 'movement']) assert.ok(existsSync(`public/images/${name}-care-editorial.webp`));
 console.log(`PASS ${pages.size} redesigned pages: shared menus, unique IDs and valid local links/anchors; four image assets`);
+const home = pages.get('/');
+assert.equal(serviceCategories.length, 6);
+assert.equal((home.match(/class="service-category-card"/g) || []).length, 6, 'All six services must render as visible cards');
+for (const service of serviceCategories) {
+ assert.ok(home.includes(`<h3>${service.title}</h3>`), `Missing prominent service heading: ${service.title}`);
+ assert.ok(home.includes(service.detail), `Missing service description: ${service.title}`);
+}
+const headline = home.match(/<h1[^>]*>(.*?)<\/h1>/s)?.[1].replace(/<br\s*\/?\s*>/g, ' ').replace(/<[^>]+>/g, '');
+assert.equal(headline, 'Expert Neurological Rehabilitation. Personalised for Every Step of Recovery.');
+for (const [route, html] of pages) {
+ const nav = html.match(/<nav\b[^>]*aria-label="Care journeys"[^>]*>(.*?)<\/nav>/s)?.[1];
+ assert.equal((nav?.match(/<a\b/g) || []).length, 4, `${route}: all international options must be present`);
+ for (const option of internationalOptions) assert.ok(nav.includes(option.title), `${route}: international label missing`);
+}
+assert.ok(pages.get('/services').includes('id="technology"') && pages.get('/services').includes('id="multidisciplinary"'));
+assert.ok(pages.get('/second-opinion').includes('distinct from a medical diagnostic opinion'));
+assert.ok(pages.get('/services').includes('Speech and swallowing rehabilitation is available'));
+const speech = pages.get('/blog/speech-recovery-after-stroke-aphasia');
+assert.ok(speech.includes('NeuroFicio provides speech and swallowing rehabilitation'));
+assert.ok(!speech.includes('No dedicated speech-language or intensive aphasia programme is confirmed by this article'));
+console.log('PASS service visibility: exact hero headline, six service cards, four international labels, service anchors and consistent speech/swallowing availability');

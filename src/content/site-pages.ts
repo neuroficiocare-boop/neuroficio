@@ -1,12 +1,12 @@
 export const sitePages = {
   "home": {
     "path": "/",
-    "title": "Specialist Neurological Rehabilitation at Home",
-    "description": "Specialist neurological rehabilitation at home in Hyderabad. Explore care in India, support for overseas families and international in-person care enquiries.",
+    "title": "Expert Neurological Rehabilitation | Personalised Recovery",
+    "description": "Specialist-led rehabilitation for stroke, spinal cord injury, brain injury, Parkinson's and other neurological conditions. Home care, technology and international support.",
     "faqs": [
       {
         "question": "Who is the home rehabilitation service for?",
-        "answer": "The service is for suitable, medically stable adults living with stroke, brain injury, spinal cord injury or Parkinson?s disease. A suitability review is needed before an assessment or programme is agreed."
+        "answer": "The service is for suitable, medically stable adults living with stroke, brain injury, spinal cord injury or Parkinson’s disease. A suitability review is needed before an assessment or programme is agreed."
       },
       {
         "question": "Where can I request care?",
@@ -14,7 +14,7 @@ export const sitePages = {
       },
       {
         "question": "How do I request an assessment?",
-        "answer": "Share the patient?s country and city, your relationship to them and the requested service. The team will discuss suitability, assessment arrangements and a written quotation before a booking is confirmed."
+        "answer": "Share the patient’s country and city, your relationship to them and the requested service. The team will discuss suitability, assessment arrangements and a written quotation before a booking is confirmed."
       },
       {
         "question": "Is this an emergency or critical-care service?",
@@ -22,14 +22,18 @@ export const sitePages = {
       },
       {
         "question": "Are assessment and programme fees published?",
-        "answer": "Fees are quoted according to the patient?s location, assessment format and support needs. Request written confirmation of what is included and any separately charged services before agreeing to care."
+        "answer": "Fees are quoted according to the patient’s location, assessment format and support needs. Request written confirmation of what is included and any separately charged services before agreeing to care."
+      },
+      {
+        "question": "Do you provide speech and swallowing rehabilitation?",
+        "answer": "Yes. Speech and swallowing rehabilitation is available through appropriately qualified specialists, subject to location, clinical suitability and specialist availability. Ask which disciplines can be included in your coordinated rehabilitation programme and confirm the arrangements and fees."
       }
     ]
   },
   "services": {
     "path": "/services",
-    "title": "Home Neurological Rehabilitation in Hyderabad",
-    "description": "Discuss home neurological rehabilitation for medically stable adults in Hyderabad. Understand assessment, goals, therapist arrangements, caregiver participation and fees.",
+    "title": "Premium Home Neurorehabilitation in India",
+    "description": "Personalised home neurological rehabilitation, advanced rehabilitation technology and multidisciplinary support, including speech and swallowing rehabilitation where available.",
     "faqs": [
       {
         "question": "Which conditions can I enquire about?",
@@ -50,17 +54,21 @@ export const sitePages = {
       {
         "question": "How are assessment and programme fees agreed?",
         "answer": "Request a written quotation based on location, assessment format and needs. Agree visits, session duration, review frequency, documentation, oversight and caregiver participation before starting. Additional disciplines and equipment must be identified separately."
+      },
+      {
+        "question": "Do you provide speech and swallowing rehabilitation?",
+        "answer": "Yes. Speech and swallowing rehabilitation is available through appropriately qualified specialists, subject to location, clinical suitability and specialist availability. Ask which disciplines can be included in your coordinated rehabilitation programme and confirm the arrangements and fees."
       }
     ]
   },
   "international": {
     "path": "/international",
-    "title": "International Neurological Rehabilitation at Home",
-    "description": "Enquire about a tailored in-person neurological rehabilitation programme outside India. Review suitability, clinician authorisation, travel, fees and local coordination.",
+    "title": "International In-Person Rehabilitation",
+    "description": "Therapist deployment and coordinated rehabilitation programmes in selected countries, subject to clinical suitability, local requirements and deployment feasibility.",
     "faqs": [
       {
         "question": "Is international rehabilitation delivered in person?",
-        "answer": "This enquiry pathway is for a tailored in-person programme in the patient?s country. Remote guidance is a separate service and is not a substitute description for international home care."
+        "answer": "This enquiry pathway is for a tailored in-person programme in the patient’s country. Remote guidance is a separate service and is not a substitute description for international home care."
       },
       {
         "question": "Which countries can I enquire from?",
@@ -82,8 +90,8 @@ export const sitePages = {
   },
   "equipment": {
     "path": "/equipment",
-    "title": "Neuro Rehabilitation Equipment & Mobility Guidance",
-    "description": "Explore questions about walking aids, home safety and rehabilitation technology. Ask NeuroFicio about equipment suitability, availability and costs.",
+    "title": "International Rehabilitation Equipment Solutions",
+    "description": "Clinical guidance on selecting and sourcing rehabilitation technologies, mobility aids and home therapy equipment, including international procurement where feasible.",
     "faqs": [
       {
         "question": "Which walking aid or wheelchair is suitable for me?",
@@ -101,12 +109,12 @@ export const sitePages = {
   },
   "second-opinion": {
     "path": "/second-opinion",
-    "title": "Neurology Second Opinion Enquiries",
-    "description": "Ask about specialist second opinions for neurological diagnoses and treatment plans. Understand the process, medical records needed and consultation fees.",
+    "title": "International Second Opinions for Rehabilitation",
+    "description": "Rehabilitation-focused consultations and specialist coordination. Understand how rehabilitation opinions differ from medical diagnostic opinions before booking.",
     "faqs": [
       {
-        "question": "What can I ask in a neurological second opinion?",
-        "answer": "You can ask for clarification of a diagnosis, treatment options or the reasoning behind a care plan. Confirm the consultantâ€™s specialty, qualifications and scope before booking."
+        "question": "How does a rehabilitation second opinion differ from a medical diagnostic opinion?",
+        "answer": "A rehabilitation-focused consultation considers your existing diagnosis, functional goals, rehabilitation plan and support needs. It is not a medical diagnostic opinion. Questions about diagnosis or medical treatment require an appropriately qualified medical specialist; ask about separate specialist coordination where needed."
       },
       {
         "question": "Which reports should I prepare?",
@@ -169,20 +177,20 @@ export const sitePages = {
   },
   "nri": {
     "path": "/nri",
-    "title": "Arrange Home Rehabilitation for a Parent in India",
-    "description": "Arrange specialist home rehabilitation for a parent in Hyderabad while living abroad. Discuss consent, therapist arrangements, family updates, time zones and reviews.",
+    "title": "Rehabilitation for Families Living Abroad",
+    "description": "Arrange rehabilitation for a loved one in India while living abroad. Discuss care planning, therapist coordination, consent and scheduled family updates.",
     "faqs": [
       {
         "question": "Can I arrange care for a parent while living abroad?",
-        "answer": "Yes, you can start an enquiry. Share the patient?s city in India separately from your own country and time zone. Hyderabad availability, suitability and appointment arrangements are confirmed individually."
+        "answer": "Yes, you can start an enquiry. Share the patient’s city in India separately from your own country and time zone. Hyderabad availability, suitability and appointment arrangements are confirmed individually."
       },
       {
         "question": "Will I receive clinical updates because I pay for care?",
-        "answer": "Payment does not automatically give access to clinical information. Updates and family participation require the patient?s consent or appropriate authorisation, with recipients and communication arrangements agreed first."
+        "answer": "Payment does not automatically give access to clinical information. Updates and family participation require the patient’s consent or appropriate authorisation, with recipients and communication arrangements agreed first."
       },
       {
         "question": "Who attends and who oversees care?",
-        "answer": "Before booking, request the treating professional?s name, qualifications and relevant registration, and agree who provides clinical oversight. Clarify whether any additional professional is employed, visiting or an external partner."
+        "answer": "Before booking, request the treating professional’s name, qualifications and relevant registration, and agree who provides clinical oversight. Clarify whether any additional professional is employed, visiting or an external partner."
       },
       {
         "question": "How do family meetings and concerns work across time zones?",
@@ -190,18 +198,18 @@ export const sitePages = {
       },
       {
         "question": "Is care immediately available everywhere in India?",
-        "answer": "No nationwide immediate availability is promised. Start with the patient?s exact city and area so the team can confirm the current service reach and staffing."
+        "answer": "No nationwide immediate availability is promised. Start with the patient’s exact city and area so the team can confirm the current service reach and staffing."
       }
     ]
   },
   "remote": {
     "path": "/remote",
-    "title": "Remote Neurorehabilitation Guidance",
-    "description": "Ask about video-based neurological rehabilitation guidance, caregiver participation and movement reviews. Suitability and availability are confirmed individually.",
+    "title": "International Virtual Rehabilitation",
+    "description": "Online assessments, clinical reviews and caregiver guidance where clinically and legally appropriate. Confirm suitability and availability for your country.",
     "faqs": [
       {
-        "question": "How does remote guidance differ from international in-person care?",
-        "answer": "Remote guidance uses video appointments for suitable discussions, caregiver guidance and reviews. International in-person programmes require separate delivery, professional authorisation and travel arrangements."
+        "question": "How does virtual rehabilitation differ from international in-person care?",
+        "answer": "International virtual rehabilitation uses online assessments, clinical reviews and caregiver guidance where clinically and legally appropriate. In-person programmes involve therapist deployment and separate local delivery, professional authorisation and travel arrangements."
       },
       {
         "question": "Can video guidance replace hands-on assessment?",
@@ -209,7 +217,7 @@ export const sitePages = {
       },
       {
         "question": "What should I prepare?",
-        "answer": "Share the patient?s country and city, your time zone and broad care needs. Ask about camera positioning, a suitable space and caregiver participation before the appointment. Confirm fees and safe document sharing first."
+        "answer": "Share the patient’s country and city, your time zone and broad care needs. Ask about camera positioning, a suitable space and caregiver participation before the appointment. Confirm fees and safe document sharing first."
       }
     ]
   },

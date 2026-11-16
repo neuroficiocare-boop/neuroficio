@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Brand from './Brand';
 import UiIcon from './UiIcon';
-import { conditions, careOptions } from '@/content/care-options';
+import { conditions, careOptions, internationalOptions } from '@/content/care-options';
 export default function SiteHeader({ activeHref }: { activeHref?: string }) {
  const pathname = usePathname();
  const current = activeHref || pathname;
@@ -37,14 +37,14 @@ export default function SiteHeader({ activeHref }: { activeHref?: string }) {
     <Brand />
     <nav aria-label="Main navigation" className="desktop-nav">
      <details className="nav-disclosure"><summary className={current === '/services' ? 'active' : ''}>Conditions <UiIcon name="chevron" size={15} /></summary><div className="nav-panel conditions-panel"><span className="menu-caption">Care shaped around your needs</span>{conditions.map(c => <Link key={c.id} href={`/services#${c.id}`} onClick={closeDisclosure}><span className="menu-icon"><UiIcon name={c.icon} /></span><span>{c.title}<small>{c.description}</small></span><UiIcon name="diagonal" size={16} /></Link>)}<Link className="menu-all" href="/services" onClick={closeDisclosure}>Explore home rehabilitation <UiIcon name="arrow" size={16} /></Link></div></details>
-     <details className="nav-disclosure"><summary className={careOptions.some(c => c.href === current) && current !== '/services' ? 'active' : ''}>Care options <UiIcon name="chevron" size={15} /></summary><div className="nav-panel"><span className="menu-caption">Find your starting point</span>{careOptions.map(c => <Link href={c.href} key={c.href} onClick={closeDisclosure}><span className="menu-icon"><UiIcon name={c.icon} /></span><span>{c.title}<small>{c.detail}</small></span><UiIcon name="diagonal" size={16} /></Link>)}</div></details>
+     <details className="nav-disclosure"><summary className={careOptions.some(c => c.href === current) && current !== '/services' ? 'active' : ''}>Our services <UiIcon name="chevron" size={15} /></summary><div className="nav-panel"><span className="menu-caption">Find your starting point</span>{careOptions.map(c => <Link href={c.href} key={c.href} onClick={closeDisclosure}><span className="menu-icon"><UiIcon name={c.icon} /></span><span>{c.title}<small>{c.detail}</small></span><UiIcon name="diagonal" size={16} /></Link>)}</div></details>
      <Link href="/blog" aria-current={current === '/blog' ? 'page' : undefined}>Patient guides</Link>
      <Link href="/#brochures">Brochures</Link>
      <Link href="/about" aria-current={current === '/about' ? 'page' : undefined}>About us</Link>
     </nav>
     <div className="header-actions"><Link className="btn btn-dark header-enquiry" href="/contact">Care enquiry <UiIcon name="arrow" size={16} /></Link><button className="menu-toggle" aria-label="Open navigation" aria-expanded={open} aria-haspopup="dialog" aria-controls="mobile-navigation" onClick={() => setOpen(true)}><UiIcon name="menu" size={24} /></button></div>
    </div>
-   <nav className="care-journey-nav" aria-label="Care journeys"><div className="container">{careOptions.slice(0, 3).map(c => <Link href={c.href} key={c.href} aria-current={current === c.href ? 'page' : undefined}><UiIcon name={c.icon} size={16} /><span>{c.title}</span><UiIcon name="diagonal" size={14} /></Link>)}</div></nav>
+   <nav className="care-journey-nav international-care-nav" aria-label="Care journeys"><div className="container">{internationalOptions.map(c => <Link href={c.href} key={c.href} title={c.detail} aria-current={current === c.href ? 'page' : undefined}><UiIcon name={c.icon} size={16} /><span>{c.title}</span><UiIcon name="diagonal" size={14} /></Link>)}</div></nav>
   </header>
   <dialog ref={dialog} id="mobile-navigation" className="mobile-dialog" onClose={closeMenu} onClick={e => { if (e.target === e.currentTarget) closeMenu(); }} aria-labelledby="mobile-menu-title">
    <div className="mobile-dialog-head"><span id="mobile-menu-title">Explore NeuroFicio</span><button onClick={closeMenu} aria-label="Close navigation"><UiIcon name="close" size={24} /></button></div>
