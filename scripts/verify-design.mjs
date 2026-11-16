@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { filterGuides } from '../src/lib/guide-search.ts';
-import { serviceCategories, internationalOptions } from '../src/content/care-options.ts';
+import { serviceCategories, internationalOptions, internationalCountries } from '../src/content/care-options.ts';
 const data = JSON.parse(readFileSync('src/content/patient-guides.json', 'utf8'));
 const summaries = data.map(g => ({ ...g, readTime: '3 min read' }));
 assert.equal(filterGuides(summaries, '  FOOT DROP  ', 'All topics')[0].slug, 'foot-drop-after-stroke');
@@ -36,6 +36,11 @@ assert.equal((home.match(/class="service-category-card"/g) || []).length, 6, 'Al
 assert.ok(home.includes('id="service-carousel"') && home.includes('role="region"'), 'Homepage service carousel must be present');
 assert.ok(home.includes('aria-label="Previous service"') && home.includes('aria-label="Next service"'), 'Visible service scroll controls missing');
 assert.ok(home.includes('href="#our-services"'), 'Hero must link directly to all six services');
+const countryList = home.match(/<ul[^>]*class="country-list"[^>]*>(.*?)<\/ul>/s)?.[1] || '';
+assert.equal((countryList.match(/<li\b/g) || []).length, 18, 'All 18 supported countries must be visible on the homepage');
+for (const country of internationalCountries) assert.ok(countryList.includes(country), `Homepage country missing: ${country}`);
+assert.ok(home.includes('id="countries"') && home.includes('href="#countries"'), 'Highlighted countries section and direct link missing');
+assert.ok(home.includes('Port of Spain') && home.includes('San Fernando'), 'Trinidad and Tobago locations missing');
 for (const service of serviceCategories) {
  assert.ok(home.includes(`<h3>${service.title}</h3>`), `Missing prominent service heading: ${service.title}`);
  assert.ok(home.includes(service.detail), `Missing service description: ${service.title}`);

@@ -22,3 +22,4 @@ export const careOptions = [...serviceCategories, internationalOptions[1], inter
  { href: '/community', title: 'Caregiver support', detail: 'Guidance for the people beside you', icon: 'users' },
 ] as const;
 export const homeAreas = ['Nallagandla', 'Tellapur', 'Gachibowli', 'Kondapur', 'Nanakramguda', 'Manikonda', 'Miyapur', 'Kukatpally', 'Madhapur', 'Jubilee Hills', 'Banjara Hills'];
+export const internationalCountries = ['Tanzania', 'Kenya', 'United Arab Emirates', 'Oman', 'Maldives', 'Qatar', 'Nepal', 'Sri Lanka', 'New Zealand', 'Kazakhstan', 'Uzbekistan', 'Bangladesh', 'Cambodia', 'Fiji', 'Trinidad and Tobago', 'Mongolia', 'Bhutan', 'Laos'] as const;

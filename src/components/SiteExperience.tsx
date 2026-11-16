@@ -3,6 +3,7 @@ import Image from 'next/image';
 import SiteHeader from './SiteHeader';
 import Brochures from './Brochures';
 import ServiceCategories from './ServiceCategories';
+import InternationalCoverage from './InternationalCoverage';
 import { AnalyticsPreference } from './AnalyticsConsent';
 import SiteFooter from './SiteFooter';
 import UiIcon, { type IconName } from './UiIcon';
@@ -10,7 +11,7 @@ import PatientQuestions from './PatientQuestions';
 import EnquiryForm from './EnquiryForm';
 import LegacyFragments from './LegacyFragments';
 import { type PageKey } from '@/content/site-pages';
-import { conditions, homeAreas } from '@/content/care-options';
+import { conditions, homeAreas, internationalCountries } from '@/content/care-options';
 import { getBlogPost } from '@/content/blog-posts';
 
 function TextLink({ href, children }: { href: string; children: React.ReactNode }) { return <Link href={href} className="text-link">{children}<UiIcon name="arrow" size={18} /></Link>; }
@@ -34,6 +35,7 @@ function Home() { return <>
  <LegacyFragments />
  <section className="home-hero"><div className="container hero-layout"><div className="hero-copy"><span className="eyebrow"><span className="status-dot" /> Private neurological rehabilitation</span><h1>Expert Neurological Rehabilitation.<br /><em>Personalised for Every Step of Recovery.</em></h1><p className="hero-description">Specialist-led rehabilitation for stroke, spinal cord injury, brain injury, Parkinson&apos;s disease and other neurological conditions delivered through personalised home care, advanced rehabilitation technology and international clinical support.</p><div className="hero-actions"><Link href="/contact" className="btn btn-dark">Request an assessment <UiIcon name="arrow" /></Link><TextLink href="#our-services">Explore all six services</TextLink></div><div className="hero-reassurance"><span><UiIcon name="check" size={16} /> Individual goals and reviews</span><span><UiIcon name="check" size={16} /> Family communication, with consent</span></div></div><div className="hero-visual"><EditorialImage kind="home" priority /><div className="hero-photo-note"><span className="photo-note-icon"><UiIcon name="heart" size={23} /></span><div><strong>Your goals. Your surroundings.</strong><span>Start with a conversation about care.</span></div></div><span className="hero-orbit" aria-hidden="true" /></div></div></section>
  <ServiceCategories />
+ <InternationalCoverage />
  <section className="section conditions-section"><div className="container section-split"><SectionHeading label="Who we support" title="Different journeys. Individual priorities." description="Explore support for your condition, with practical goals for movement and daily function." /><div className="condition-list">{conditions.map(c => <Link className="condition-row" href={`/services#${c.id}`} key={c.id}><span className="condition-number">{c.number}</span><div><h3>{c.title}</h3><p>{c.description}</p></div><span className="round-arrow"><UiIcon name="diagonal" size={22} /></span></Link>)}</div></div><div className="container"><ScopeNote /></div></section>
  <ProgrammeOverview />
  <section id="how-care-starts" className="section"><div className="container section-split"><SectionHeading label="How care starts" title="A clearer path, at your pace." description="Understand suitability, assessment and the proposed programme before a start date is confirmed." /><Journey /></div></section>
@@ -56,7 +58,7 @@ function Services() { return <>
  <section className="section"><div className="container areas-layout"><div><SectionHeading label="Hyderabad home visits" title="Care closer to home." description="Tell us your area so we can confirm home-visit availability and appointment arrangements." /><TextLink href="/contact">Check your location</TextLink></div><div className="area-tags">{homeAreas.map(area => <span key={area}>{area}</span>)}</div></div></section>
  <CarePrompt title="What would you like to do more easily?" text="Walking, transfers or a daily routine: begin with the activity that matters to you." />
  </>; }
-function International() { const countries = ['Tanzania', 'Kenya', 'United Arab Emirates', 'Oman', 'Maldives', 'Qatar', 'Nepal', 'Sri Lanka', 'New Zealand', 'Kazakhstan', 'Uzbekistan', 'Bangladesh', 'Cambodia', 'Fiji', 'Trinidad and Tobago', 'Mongolia', 'Bhutan', 'Laos']; return <>
+function International() { const countries = internationalCountries; return <>
  <PageIntro label="International In-Person Rehabilitation" title="International In-Person Rehabilitation" description="Therapist deployment and coordinated rehabilitation programmes in selected countries. Clinical suitability, local delivery requirements, clinician authorisation, staffing and start dates are confirmed individually." note="This pathway is for in-person care outside India. Video-based guidance is a separate service, with its own suitability checks." />
  <section className="section"><div className="container image-text-split"><EditorialImage kind="movement" /><div><SectionHeading label="A programme built around the person" title="Plan the care. Confirm the arrangements." description="Begin with the patient’s country, city and broad rehabilitation needs. The team will discuss whether a suitable in-person programme can be arranged and what further information is needed." /><TextLink href="/contact">Discuss international in-person care</TextLink><p className="body-copy">Looking for video appointments instead? <Link href="/remote" className="text-link">Explore remote guidance <UiIcon name="arrow" size={16} /></Link></p></div></div></section>
  <section className="section section-sage"><div className="container section-split"><SectionHeading label="From enquiry to handover" title="Clear steps before travel begins." description="An enquiry does not confirm a booking or deployment. Each stage needs agreement before travel and care begin." /><ol className="journey-list detailed">{[['Initial enquiry and suitability', 'Discuss the patient’s needs, stability, location and relevant clinical precautions.'], ['Local delivery and authorisation checks', 'Confirm local professional requirements, clinical coordination and appropriate support.'], ['Therapist matching and written proposal', 'Agree the professional, supervision, working schedule, fees, responsibilities and scope.'], ['Confirmed travel and start', 'Confirm travel, accommodation and a start date after the proposal and local arrangements are agreed.'], ['Ongoing reviews and handover', 'Agree progress reviews, escalation contacts, leave cover and the transition back to local care.']].map(([t,d],i)=><li key={t}><span className="journey-number">0{i+1}</span><div><h3>{t}</h3><p>{d}</p></div></li>)}</ol></div></section>

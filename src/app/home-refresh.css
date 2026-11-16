@@ -89,3 +89,23 @@
  .home-experience .condition-row{padding:22px 0}
 }
 @media(prefers-reduced-motion:reduce){.service-carousel .service-category-card,.service-scroll-controls button,.site-header .international-care-nav a,.home-experience .condition-row{transition:none}.service-carousel .service-category-card:hover{transform:none}}
+
+/* A visible country list, kept outside menus and carousels. */
+.home-experience .countries-section{background:#fffdf8;padding-block:70px}
+.coverage-panel{display:grid;grid-template-columns:.85fr 1.15fr;gap:48px;background:radial-gradient(ellipse at 0 0,#c9ecd9,transparent 65%),#e3f1e7;border:1px solid #c1decb;border-top:5px solid #16866d;border-radius:24px;padding:42px}
+.coverage-symbol{display:grid;place-items:center;width:62px;height:62px;background:#123f3c;color:#a7e6cd;border-radius:50%;margin-bottom:24px}
+.coverage-intro h2{font-size:clamp(36px,3.6vw,48px);letter-spacing:-1.4px;margin:16px 0 20px}
+.coverage-count{display:inline-block;font-size:11px;font-weight:600;color:#194e3c;border-bottom:1px solid #9fc8ae;padding-bottom:8px;margin-bottom:18px}
+.coverage-intro p{font-size:14px;line-height:1.9;color:#395a4f;margin-bottom:24px;max-width:46ch}
+.coverage-intro .btn{font-size:12px;gap:12px;background:#123f3c}
+.coverage-locations{align-self:center;min-width:0}
+.country-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;list-style:none;padding:0;margin:0}
+.country-list li{display:flex;align-items:center;gap:9px;min-height:54px;padding:12px;background:#ffffffb8;border:1px solid #c3dccb;border-radius:9px;font-size:12px;font-weight:600;line-height:1.5;color:#153f36;overflow-wrap:anywhere}
+.country-list li::before{content:'';width:5px;height:5px;border-radius:50%;background:#16866d;flex-shrink:0}
+.coverage-location-note{font-size:11px;line-height:1.8;color:#456557;margin-top:18px}
+.coverage-local-note{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 20px;padding-top:24px}
+.coverage-local-note p,.coverage-local-note .text-link{font-size:12px}
+.international-country-link{display:inline-flex;align-items:center;gap:14px;color:#a7e6cd;font-size:13px;font-weight:600;border-bottom:1px solid #a7e6cd70;padding:10px 0;margin-top:20px}
+.international-country-link:hover{color:white}
+@media(max-width:980px){.coverage-panel{grid-template-columns:1fr;gap:32px;padding:32px}.coverage-intro h2 br{display:none}.coverage-intro p{max-width:75ch}.country-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:560px){.home-experience .countries-section{padding-block:48px}.coverage-panel{padding:25px 20px;border-radius:18px;gap:26px}.country-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.country-list li{font-size:11px;min-height:50px;padding:10px}.coverage-intro h2{font-size:36px}.coverage-intro .btn{width:100%}.coverage-count{font-size:10px}}

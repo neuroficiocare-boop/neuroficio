@@ -18,3 +18,7 @@ Visual/interaction review could not be completed. The Windows browser tool stopp
 ## Equal emphasis for all six services
 
 Owner feedback on the live screenshot: highlighting only the first card made the other services appear secondary. All six cards now share the same deep teal background, white headings, light body text, mint icons and service numbers. The first- and last-card colour exceptions were removed. Previously verified text contrast applies equally to every service card.
+
+## Highlighted international coverage
+
+Added a dedicated Countries we support section immediately after the homepage services and international-options area. A mint panel shows all 18 owner-supplied countries without requiring a menu or carousel interaction, with the Trinidad and Tobago city note, individual-arrangement explanation and a country-specific enquiry link. The international-options panel links directly to /#countries. The homepage and international service page share one country list to prevent drift. Build, 32-route SEO checks, all article regressions and new assertions for all 18 homepage countries pass.
