@@ -46,16 +46,13 @@
 .service-scroll-controls button:disabled{opacity:.35;cursor:default}
 .previous-service-arrow{transform:rotate(180deg)}
 .service-category-grid.service-carousel{display:flex;align-items:stretch;gap:22px;overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scroll-padding-inline:4px;scrollbar-width:thin;scrollbar-color:#1d8e73 #d9e4d9;padding:4px 4px 20px}
-.service-carousel .service-category-card{flex:0 0 calc((100% - 44px)/3);scroll-snap-align:start;border-radius:18px;padding:30px;background:white;box-shadow:0 4px 12px #163c2d06}
+.service-carousel .service-category-card{flex:0 0 calc((100% - 44px)/3);scroll-snap-align:start;border-radius:18px;padding:30px;background:#123f3c;color:white;border-color:#123f3c;box-shadow:0 4px 12px #163c2d06}
 .service-carousel .service-category-card:hover{transform:translateY(-3px);box-shadow:0 12px 25px #163c2d10}
 .service-carousel .service-category-card h3{font-size:27px;line-height:1.25}
-.service-carousel .service-category-card p{font-size:14px;line-height:1.85}
-.service-carousel .service-category-card:first-child{background:#123f3c;color:white;border-color:#123f3c}
-.service-carousel .service-category-card:first-child p{color:#d4e6dd}
-.service-carousel .service-category-card:first-child .feature-icon{background:#a7e6cd;color:#123f3c}
-.service-carousel .service-category-card:first-child .service-category-number{color:#a7e6cd}
-.service-carousel .service-category-card:first-child .service-category-action{border-color:#ffffff30}
-.service-carousel .service-category-card:last-child{background:#e2eee7}
+.service-carousel .service-category-card p{font-size:14px;line-height:1.85;color:#d4e6dd}
+.service-carousel .service-category-card .feature-icon{background:#a7e6cd;color:#123f3c}
+.service-carousel .service-category-card .service-category-number{color:#a7e6cd}
+.service-carousel .service-category-card .service-category-action{border-color:#ffffff30}
 .service-category-action svg{padding:7px;box-sizing:content-box;border-radius:50%;background:#e8f1e8;color:#1a5c47}
 .international-service-options{background:#0f3440;color:white;border:0;border-radius:22px;padding:40px;gap:55px;margin-top:48px}
 .international-service-options .eyebrow{color:#9ee5cc}
