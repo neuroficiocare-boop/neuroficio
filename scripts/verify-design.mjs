@@ -33,6 +33,9 @@ console.log(`PASS ${pages.size} redesigned pages: shared menus, unique IDs and v
 const home = pages.get('/');
 assert.equal(serviceCategories.length, 6);
 assert.equal((home.match(/class="service-category-card"/g) || []).length, 6, 'All six services must render as visible cards');
+assert.ok(home.includes('id="service-carousel"') && home.includes('role="region"'), 'Homepage service carousel must be present');
+assert.ok(home.includes('aria-label="Previous service"') && home.includes('aria-label="Next service"'), 'Visible service scroll controls missing');
+assert.ok(home.includes('href="#our-services"'), 'Hero must link directly to all six services');
 for (const service of serviceCategories) {
  assert.ok(home.includes(`<h3>${service.title}</h3>`), `Missing prominent service heading: ${service.title}`);
  assert.ok(home.includes(service.detail), `Missing service description: ${service.title}`);

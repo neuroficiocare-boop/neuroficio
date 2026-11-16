@@ -3,6 +3,7 @@ import AnalyticsConsent from '@/components/AnalyticsConsent';
 import { Inter, Source_Serif_4 } from 'next/font/google';
 import { SITE_URL, jsonLd } from '@/lib/seo';
 import './globals.css';
+import './home-refresh.css';
 const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' });
 const serif = Source_Serif_4({ subsets: ['latin'], display: 'swap', variable: '--font-editorial' });
 export const metadata: Metadata = {
