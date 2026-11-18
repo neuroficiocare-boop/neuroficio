@@ -2,7 +2,7 @@
 
 ## What is implemented
 
-- `/portal`: email-code sign-in, invitation-code acceptance and separate patient/clinical workspaces.
+- `/portal`: email-link or email-code sign-in, invitation-link/code acceptance and separate patient/clinical workspaces.
 - Patient dashboard, daily check-ins, current and previous care plans, clinical measurements, symptom history, published notes, appointments and printable progress reports.
 - Clinical patient registry with search, record creation and email invitations; lead-clinician clinic-wide access, assigned-clinician access and staff TOTP MFA enrollment/verification.
 - Immutable plan revisions, clinical entries and report snapshots; a narrow check-in review operation.
@@ -35,9 +35,9 @@ Demo workflow: submit a check-in as Asha, switch to doctor view, acknowledge it,
 
    Never expose the service key through a `NEXT_PUBLIC_` variable or commit it. Regular clinical queries use the current user's JWT and RLS. The service key is used only for a patient invitation after staff authorisation succeeds.
 
-4. Configure a production email delivery provider in Supabase Auth. Configure Auth's public site URL and allowed redirects to the verified NeuroFicio origin. Keep invitation-only enrollment; the application uses `shouldCreateUser: false` for sign-in.
-5. Change the **Magic Link** email template to display `{{ .Token }}` as the numeric sign-in code. Do not rely on Supabase's default magic-link template; this interface deliberately uses email codes.
-6. Change the **Invite User** template to display `{{ .Token }}` and direct the recipient to `https://<your-site>/portal?invited=1`. The recipient enters the invited email address and invitation code there. Avoid putting patient names, diagnosis or notes in the email.
+4. Set Auth's Site URL to `https://www.neuroficio.com/portal` and restrict any additional redirect destinations to approved portal origins. Keep invitation-only enrollment; the application uses `shouldCreateUser: false` for sign-in.
+5. The default `SUPABASE_EMAIL_MODE=link` works with Supabase's standard Magic Link email. The portal stores a short-lived PKCE verifier in an HttpOnly cookie, exchanges the callback code on the server and keeps session tokens out of browser storage. Links must be opened in the browser that requested them within 15 minutes. The default review email service may deliver only to project-team addresses and has restrictive quotas; configure custom SMTP before onboarding other patients.
+6. The standard **Invite User** link returns to the portal, which removes the token fragment immediately and asks the recipient to confirm the invited email before creating a server session. With custom SMTP, you can instead set `SUPABASE_EMAIL_MODE=code`, show `{{ .Token }}` in the Magic Link template, and show an invitation code with a link to `/portal?invited=1` in the Invite User template. Do not put patient names, diagnoses or notes in these emails. Supabase currently requires custom SMTP or an eligible paid plan to edit templates; neither is purchased automatically.
 7. Enable TOTP MFA in Auth. Staff are required to enroll and verify at the portal before clinical data can be loaded. Configure recovery/support procedures for a lost authenticator; the initial UI does not offer factor deletion or recovery overrides.
 8. Create the first clinician account through your approved administrative process. After verifying the clinician's identity, provision a clinic membership with SQL as described below. Do not offer public self-selection of clinical roles.
 9. Restart the application, sign in as the clinician, finish MFA setup, create a fictional pilot patient and test the entire invitation and report workflow with controlled test accounts before using real records.

@@ -25,3 +25,33 @@ test('Mutations require a matching Origin, including scheme and port', () => {
   v.sameOrigin(request('https://neuroficio.test'));
   for (const origin of ['https://attacker.test', 'http://neuroficio.test', 'https://neuroficio.test:444', null]) assert.throws(() => v.sameOrigin(request(origin)));
 });
+
+const storageSource = await readFile(new URL('../src/lib/portal/pkce-storage.ts', import.meta.url), 'utf8');
+const storageCode = ts.transpileModule(storageSource, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 } }).outputText;
+const { verifierStorage } = await import(`data:text/javascript;base64,${Buffer.from(storageCode).toString('base64')}`);
+
+test('PKCE cookie storage persists only short-lived, HttpOnly verification state', () => {
+  const cookies = new Map();
+  const writes = [];
+  const adapter = () => verifierStorage({ read: key => cookies.get(key), write: (key, value, options) => { cookies.set(key, value); writes.push({ key, value, options }); } }, true);
+  const first = adapter();
+  first.setItem('nf-auth-code-verifier', 'browser-bound-secret');
+  first.setItem('nf-auth', 'session-access-and-refresh-tokens');
+  const second = adapter();
+  assert.equal(second.getItem('nf-auth-code-verifier'), 'browser-bound-secret');
+  assert.equal(second.getItem('nf-auth'), null);
+  assert.equal(writes.length, 1);
+  assert.deepEqual(writes[0].options, { httpOnly: true, secure: true, sameSite: 'lax', path: '/api/portal', maxAge: 900 });
+  second.removeItem('nf-auth-code-verifier');
+  assert.equal(writes.at(-1).options.maxAge, 0);
+});
+
+test('Independent PKCE flow slots do not overwrite one another', () => {
+  const cookies = new Map();
+  const adapter = verifierStorage({ read: key => cookies.get(key), write: (key, value) => cookies.set(key, value) }, false);
+  adapter.setItem('nf-auth-flow-aaaa-code-verifier', 'first');
+  adapter.setItem('nf-auth-flow-bbbb-code-verifier', 'second');
+  assert.equal(adapter.getItem('nf-auth-flow-aaaa-code-verifier'), 'first');
+  assert.equal(adapter.getItem('nf-auth-flow-bbbb-code-verifier'), 'second');
+  assert.throws(() => adapter.setItem('nf-auth-code-verifier', 'x'.repeat(3001)));
+});

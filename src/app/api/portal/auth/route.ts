@@ -1,4 +1,4 @@
-import { authenticated, checked, clearSession, client, failure, json, saveSession } from '@/lib/portal/server';
+import { authenticated, checked, clearSession, client, emailMode, failure, json, pkceClient, saveSession } from '@/lib/portal/server';
 import { email, PortalError, sameOrigin, text, uuid } from '@/lib/portal/validation';
 
 export const dynamic = 'force-dynamic';
@@ -26,10 +26,34 @@ export async function POST(request: Request) {
     }
     if (body.action === 'send-code') {
       const address = email(body.email);
-      const { error } = await client().auth.signInWithOtp({ email: address, options: { shouldCreateUser: false } });
+      const mode = emailMode();
+      const db = mode === 'link' ? await pkceClient() : client();
+      const { error } = await db.auth.signInWithOtp({ email: address, options: { shouldCreateUser: false, ...(mode === 'link' ? { emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.neuroficio.com'}/portal` } : {}) } });
       // Do not disclose whether an email has a care account. Provider rate limits apply.
       if (error?.status === 429) throw new PortalError('Please wait before requesting another code.', 429);
-      return json({ message: 'If this email has an active care account, a sign-in code will arrive shortly.' });
+      if (error && error.status !== 400 && error.status !== 422) throw new PortalError('Email delivery is temporarily unavailable. Please contact your care team.', 503);
+      return json({ message: mode === 'link' ? 'If this email has an active care account, a sign-in link will arrive shortly. Open it in this same browser within 15 minutes.' : 'If this email has an active care account, a sign-in code will arrive shortly.' });
+    }
+    if (body.action === 'exchange-link') {
+      const db = await pkceClient();
+      const code = text(body.code, 'Sign-in code', 2048);
+      const flowId = typeof body.flow_id === 'string' && /^[a-f0-9]{16,64}$/.test(body.flow_id) ? body.flow_id : undefined;
+      const { data, error } = await db.auth.exchangeCodeForSession(code, flowId ? { flowId } : undefined);
+      if (error || !data.session) throw new PortalError('This sign-in link is expired or belongs to another browser. Request a new link and open it in the browser that requested it.');
+      const { data: verified, error: verifyError } = await db.auth.getUser();
+      if (verifyError || !verified.user?.email_confirmed_at) throw new PortalError('Email verification could not be confirmed. Please request a new link.');
+      await saveSession(data.session);
+      return json({ ok: true });
+    }
+    if (body.action === 'accept-invitation-link') {
+      const expectedEmail = email(body.email);
+      const db = client();
+      const { data, error } = await db.auth.setSession({ access_token: text(body.access_token, 'Invitation', 6000), refresh_token: text(body.refresh_token, 'Invitation', 1000) });
+      if (error || !data.session) throw new PortalError('This invitation link has expired. Contact your care team for another invitation.');
+      const { data: verified, error: verifyError } = await db.auth.getUser();
+      if (verifyError || !verified.user?.email_confirmed_at || !verified.user.invited_at || verified.user.email?.toLowerCase() !== expectedEmail) throw new PortalError('The email address does not match this verified invitation.');
+      await saveSession(data.session);
+      return json({ ok: true });
     }
     if (body.action === 'verify-code') {
       const token = text(body.code, 'Verification code', 10);

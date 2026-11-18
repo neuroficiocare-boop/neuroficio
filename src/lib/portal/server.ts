@@ -2,8 +2,18 @@ import 'server-only';
 import { cookies } from 'next/headers';
 import { createClient, type Session, type SupabaseClient } from '@supabase/supabase-js';
 import { PortalError } from './validation';
+import { verifierStorage } from './pkce-storage';
 
 export function configured() { return Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY); }
+export function emailMode(): 'link' | 'code' { return process.env.SUPABASE_EMAIL_MODE === 'code' ? 'code' : 'link'; }
+export async function pkceClient() {
+  if (!configured()) throw new PortalError('The secure care service is not connected yet.', 503);
+  const store = await cookies();
+  return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, { auth: {
+    flowType: 'pkce', persistSession: true, autoRefreshToken: false, detectSessionInUrl: false, storageKey: 'nf-auth',
+    storage: verifierStorage({ read: key => store.get(key)?.value, write: (key, value, options) => { store.set(key, value, options); } }, process.env.NODE_ENV === 'production'),
+  } });
+}
 export function client() {
   if (!configured()) throw new PortalError('The secure care service is not connected yet. You can explore the fictional demo.', 503);
   return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
@@ -17,6 +27,7 @@ export async function saveSession(session: Session) {
 export async function clearSession() {
   const store = await cookies();
   for (const name of ['nf-access', 'nf-refresh']) store.set(name, '', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/api/portal', maxAge: 0 });
+  for (const cookie of store.getAll()) if (cookie.name.startsWith('nf-pkce-')) store.set(cookie.name, '', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/api/portal', maxAge: 0 });
 }
 export async function authenticated() {
   const db = client();

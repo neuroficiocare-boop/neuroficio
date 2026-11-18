@@ -82,7 +82,7 @@ function ReportView({ report, demo }: { report: Report; demo: boolean }) {
 
 type AuthStatus = { email: string; staff: boolean; verified: boolean; factors: { id: string; name?: string }[] };
 
-export default function CarePortal({ connected }: { connected: boolean }) {
+export default function CarePortal({ connected, emailMode = 'link' }: { connected: boolean; emailMode?: 'link' | 'code' }) {
   const [data, setData] = useState<PortalData | null>(null);
   const [demo, setDemo] = useState(false);
   const [loading, setLoading] = useState(connected);
@@ -96,6 +96,7 @@ export default function CarePortal({ connected }: { connected: boolean }) {
   const [address, setAddress] = useState('');
   const [codeSent, setCodeSent] = useState(false);
   const [invitation, setInvitation] = useState(false);
+  const [inviteTokens, setInviteTokens] = useState<{ access_token: string; refresh_token: string } | null>(null);
   const [enrollment, setEnrollment] = useState<{ id: string; qr: string; secret: string } | null>(null);
 
   function enterDemo(role: 'patient' | 'lead') {
@@ -129,6 +130,19 @@ export default function CarePortal({ connected }: { connected: boolean }) {
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
+    const fragment = new URLSearchParams(window.location.hash.slice(1));
+    if (fragment.has('access_token') || fragment.has('error') || query.has('code') || query.has('error')) {
+      window.history.replaceState(null, '', '/portal');
+      if (fragment.has('error') || query.has('error')) { setError('This email link is invalid or expired. Request a new sign-in link.'); setLoading(false); return; }
+      if (query.has('code')) {
+        authenticate({ action: 'exchange-link', code: query.get('code'), flow_id: query.get('sb_flow_id') }).finally(() => setLoading(false));
+        return;
+      }
+      if (fragment.get('type') === 'invite' && fragment.get('access_token') && fragment.get('refresh_token')) {
+        setInviteTokens({ access_token: fragment.get('access_token')!, refresh_token: fragment.get('refresh_token')! }); setLoading(false); return;
+      }
+      setError('Please request a new sign-in link from this portal.'); setLoading(false); return;
+    }
     if (query.has('demo')) { enterDemo(query.get('demo') === 'clinician' ? 'lead' : 'patient'); return; }
     if (query.has('invited')) { setInvitation(true); setCodeSent(true); }
     if (connected) loadAccount().catch((e: Error) => { if (!(e instanceof CareApiError) || e.status !== 401) setError(e.message); setLoading(false); });
@@ -140,7 +154,7 @@ export default function CarePortal({ connected }: { connected: boolean }) {
     setBusy(true); setError('');
     try {
       if (!demo) await api('auth', { action: 'logout' });
-      setData(null); setAuth(null); setDemo(false); setEnrollment(null); setNotice(''); setCodeSent(false); setTab('overview');
+      setData(null); setAuth(null); setDemo(false); setEnrollment(null); setInviteTokens(null); setNotice(''); setCodeSent(false); setTab('overview');
       window.history.replaceState(null, '', '/portal');
     } catch (e) { setError((e as Error).message); }
     finally { setBusy(false); }
@@ -152,7 +166,7 @@ export default function CarePortal({ connected }: { connected: boolean }) {
       const result = await api('auth', action);
       if (result.message) { setNotice(result.message); setCodeSent(true); }
       else if (result.qr) setEnrollment(result);
-      else { setEnrollment(null); await loadAccount(); }
+      else { setEnrollment(null); setInviteTokens(null); await loadAccount(); }
     } catch (e) { setError((e as Error).message); }
     finally { setBusy(false); }
   }
@@ -210,6 +224,8 @@ export default function CarePortal({ connected }: { connected: boolean }) {
     finally { setBusy(false); }
   }
 
+  const signInLabel = busy ? 'Please wait...' : inviteTokens ? 'Confirm email and accept invitation' : codeSent && (emailMode === 'code' || invitation) ? 'Verify and continue' : emailMode === 'link' ? (codeSent ? 'Send another sign-in link' : 'Email me a sign-in link') : 'Email me a sign-in code';
+
   const messages = <div className="cp-messages">{error && <div className="cp-alert cp-error" role="alert">{error}</div>}{notice && <div className="cp-alert cp-success" role="status"><CheckCircle2 size={18} />{notice}</div>}</div>;
 
   if (!data) return <main className="cp-login"><div className="cp-login-brand"><Link href="/" className="cp-wordmark">neuro<span>ficio</span><small>CARE PORTAL</small></Link><Link href="/" className="cp-back">Back to website <ArrowUpRight size={16} /></Link></div>
@@ -221,9 +237,9 @@ export default function CarePortal({ connected }: { connected: boolean }) {
       {(enrollment || auth.factors.length > 0) && <form onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget); authenticate({ action: 'verify-mfa', factor_id: f.get('factor_id'), code: f.get('code') }); }}><fieldset disabled={busy}>{auth.factors.length > 1 ? <Field label="Authenticator"><select name="factor_id">{auth.factors.map(f => <option value={f.id} key={f.id}>{f.name ?? 'Authenticator'}</option>)}</select></Field> : <input type="hidden" name="factor_id" value={enrollment?.id ?? auth.factors[0]?.id ?? ''} />}<Field label="Six-digit authenticator code"><input name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required /></Field><button className="cp-button">{busy ? 'Verifying…' : 'Open clinical workspace'}<ArrowRight size={16} /></button></fieldset></form>}
       <button className="cp-text-button" onClick={signOut} disabled={busy}>Sign out</button>
     </> : <>
-      <span className="cp-icon-tile"><ShieldCheck /></span><span className="cp-kicker">Welcome to NeuroFicio</span><h2>Sign in to your care</h2><p>Use the email address registered with your care team.</p>{messages}
-      {connected ? <form onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget); authenticate(codeSent ? { action: 'verify-code', email: address, code: f.get('code'), invitation } : { action: 'send-code', email: address }); }}><fieldset disabled={busy}><Field label="Email address"><input type="email" required value={address} onChange={e => setAddress(e.target.value)} autoComplete="email" maxLength={254} placeholder="you@example.com" /></Field>{codeSent && <Field label={invitation ? 'Invitation code from your email' : 'Sign-in code from your email'}><input name="code" required inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6,10}" minLength={6} maxLength={10} /></Field>}<button className="cp-button cp-wide">{busy ? 'Please wait…' : codeSent ? 'Verify and continue' : 'Email me a sign-in code'}<ArrowRight size={17} /></button></fieldset></form> : <div className="cp-alert">Secure email sign-in is awaiting backend configuration. Explore the working demo below using fictional records.</div>}
-      {connected && <div className="cp-login-links"><button className="cp-text-button" disabled={busy} onClick={() => { setCodeSent(!codeSent); setInvitation(!codeSent); setNotice(''); }}>{codeSent ? 'Request a new sign-in code' : 'I have an invitation code'}</button><p>New patient? Your care team will invite you.</p></div>}
+      <span className="cp-icon-tile"><ShieldCheck /></span><span className="cp-kicker">Welcome to NeuroFicio</span><h2>{inviteTokens ? "Accept your care invitation" : "Sign in to your care"}</h2><p>{inviteTokens ? "Confirm the email address your invitation was sent to. This opens that account only." : "Use the email address registered with your care team."}</p>{messages}
+      {connected ? <form onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget); authenticate(inviteTokens ? { action: 'accept-invitation-link', email: address, ...inviteTokens } : codeSent && (emailMode === 'code' || invitation) ? { action: 'verify-code', email: address, code: f.get('code'), invitation } : { action: 'send-code', email: address }); }}><fieldset disabled={busy}><Field label="Email address"><input type="email" required value={address} onChange={e => setAddress(e.target.value)} autoComplete="email" maxLength={254} placeholder="you@example.com" /></Field>{codeSent && (emailMode === 'code' || invitation) && !inviteTokens && <Field label={invitation ? 'Invitation code from your email' : 'Sign-in code from your email'}><input name="code" required inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6,10}" minLength={6} maxLength={10} /></Field>}<button className="cp-button cp-wide">{signInLabel}<ArrowRight size={17} /></button></fieldset></form> : <div className="cp-alert">Secure email sign-in is awaiting backend configuration. Explore the working demo below using fictional records.</div>}
+      {connected && !inviteTokens && <div className="cp-login-links"><button className="cp-text-button" disabled={busy} onClick={() => { setCodeSent(!codeSent); setInvitation(!codeSent); setNotice(''); }}>{codeSent ? 'Back to sign-in' : 'I have an invitation code'}</button><p>New patient? Your care team will invite you.</p></div>}
       <div className="cp-demo-entry"><span className="cp-kicker">Explore the initial platform</span><p>Fictional records only. Please do not enter real patient or medical information.</p><div><button className="cp-button cp-secondary" onClick={() => enterDemo('patient')}>Patient demo <ArrowRight size={15} /></button><button className="cp-button cp-secondary" onClick={() => enterDemo('lead')}>Doctor demo <ArrowRight size={15} /></button></div></div>
       <small className="cp-login-privacy"><ShieldCheck size={14} />Email verification · Individual patient access</small>
     </>}</section></div><footer className="cp-login-footer">NeuroFicio by Therapy Partners <span>Care portal · Initial release</span></footer></main>;
