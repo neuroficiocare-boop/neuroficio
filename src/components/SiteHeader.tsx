@@ -42,7 +42,7 @@ export default function SiteHeader({ activeHref }: { activeHref?: string }) {
      <Link href="/#brochures">Brochures</Link>
      <Link href="/about" aria-current={current === '/about' ? 'page' : undefined}>About us</Link>
     </nav>
-    <div className="header-actions"><Link className="btn btn-dark header-enquiry" href="/contact">Care enquiry <UiIcon name="arrow" size={16} /></Link><button className="menu-toggle" aria-label="Open navigation" aria-expanded={open} aria-haspopup="dialog" aria-controls="mobile-navigation" onClick={() => setOpen(true)}><UiIcon name="menu" size={24} /></button></div>
+    <div className="header-actions"><a className="header-portal" href="/portal">Patient login</a><Link className="btn btn-dark header-enquiry" href="/contact">Care enquiry <UiIcon name="arrow" size={16} /></Link><button className="menu-toggle" aria-label="Open navigation" aria-expanded={open} aria-haspopup="dialog" aria-controls="mobile-navigation" onClick={() => setOpen(true)}><UiIcon name="menu" size={24} /></button></div>
    </div>
    <nav className="care-journey-nav international-care-nav" aria-label="Care journeys"><div className="container">{internationalOptions.map(c => <Link href={c.href} key={c.href} title={c.detail} aria-current={current === c.href ? 'page' : undefined}><UiIcon name={c.icon} size={16} /><span>{c.title}</span><UiIcon name="diagonal" size={14} /></Link>)}</div></nav>
   </header>

@@ -1,0 +1,14 @@
+export type Role = 'patient' | 'clinician' | 'lead';
+export type Tab = 'overview' | 'patients' | 'plan' | 'checkin' | 'progress' | 'notes' | 'appointments' | 'reports';
+export type Activity = { id: string; title: string; instruction: string; frequency: string };
+export type Goal = { title: string; target: string };
+export type Patient = { id: string; name: string; email: string; condition: string; created_at: string; clinic_id: string; clinician_id: string | null; user_id: string | null };
+export type Plan = { id: string; patient_id: string; title: string; precautions: string; review_date: string; activities: Activity[]; goals: Goal[]; created_at: string };
+export type Checkin = { id: string; patient_id: string; plan_id: string; day: string; completed: string[]; pain: number; energy: number; comment: string; reviewed_at: string | null; created_at: string };
+export type Observation = { id: string; patient_id: string; label: string; value: number; unit: string; measured_on: string; direction: 'higher' | 'lower'; created_at: string };
+export type Note = { id: string; patient_id: string; title: string; body: string; published: boolean; created_at: string };
+export type Appointment = { id: string; patient_id: string; starts_at: string; title: string; location: string; created_at: string };
+export type ReportSnapshot = { patient_name: string; condition: string; plan: Plan | null; observations: Observation[]; checkins: Checkin[]; notes: Note[]; period_start: string; period_end: string; author: string };
+export type Report = { id: string; patient_id: string; title: string; summary: string; next_steps: string; snapshot: ReportSnapshot; created_at: string };
+export type PortalData = { role: Role; email: string; patients: Patient[]; plans: Plan[]; checkins: Checkin[]; observations: Observation[]; notes: Note[]; appointments: Appointment[]; reports: Report[]; canInvite: boolean };
+export type Mutation = { action: string; patient_id?: string; [key: string]: unknown };

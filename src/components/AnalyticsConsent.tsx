@@ -15,6 +15,7 @@ function storeChoice(allowed: boolean) {
  window.dispatchEvent(new Event('neuroficio-analytics-choice'));
 }
 export function trackContactAction(name: 'whatsapp_click' | 'phone_click') {
+ if (window.location.pathname.startsWith('/portal')) return;
  if (!hasConsent()) return;
  // Explicit event allowlist. No link URLs, form values or message text.
  (window as AnalyticsWindow).gtag?.('event', name, { page_location: `${window.location.origin}${window.location.pathname}` });
@@ -28,6 +29,8 @@ export default function AnalyticsConsent() {
  const [choice, setChoice] = useState<string | null>('loading');
  const [ready, setReady] = useState(false);
  useEffect(()=>{
+  (window as unknown as Record<string, unknown>)[`ga-disable-${MEASUREMENT_ID}`] = pathname.startsWith('/portal');
+  if (pathname.startsWith('/portal')) return;
   const update = () => { try { setChoice(localStorage.getItem(STORAGE_KEY)); } catch { setChoice('declined'); } };
   update(); window.addEventListener('neuroficio-analytics-choice', update);
   const click = (e: MouseEvent) => {
@@ -38,11 +41,12 @@ export default function AnalyticsConsent() {
   };
   document.addEventListener('click', click);
   return ()=>{ window.removeEventListener('neuroficio-analytics-choice', update); document.removeEventListener('click', click); };
- }, []);
+ }, [pathname]);
  useEffect(()=>{
-  if (choice !== 'allowed' || !ready) return;
+  if (pathname.startsWith('/portal') || choice !== 'allowed' || !ready) return;
   (window as AnalyticsWindow).gtag?.('event', 'page_view', { page_location: `${window.location.origin}${pathname}`, page_referrer: '', page_title: 'NeuroFicio' });
  }, [pathname, choice, ready]);
+ if (pathname.startsWith('/portal')) return null;
  return <>
  {choice === 'allowed' && <Script id="neuroficio-analytics" src={`https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}`} strategy="afterInteractive" onReady={()=>{
   const w = window as AnalyticsWindow; w.dataLayer = w.dataLayer || [];

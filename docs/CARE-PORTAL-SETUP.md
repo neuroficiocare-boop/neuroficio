@@ -1,0 +1,91 @@
+# NeuroFicio Care Portal: setup and release notes
+
+## What is implemented
+
+- `/portal`: email-code sign-in, invitation-code acceptance and separate patient/clinical workspaces.
+- Patient dashboard, daily check-ins, current and previous care plans, clinical measurements, symptom history, published notes, appointments and printable progress reports.
+- Clinical patient registry with search, record creation and email invitations; lead-clinician clinic-wide access, assigned-clinician access and staff TOTP MFA enrollment/verification.
+- Immutable plan revisions, clinical entries and report snapshots; a narrow check-in review operation.
+- Server API with HttpOnly session cookies, verified email identity, same-origin mutation checks, validation and no-store responses.
+- PostgreSQL migration with row-level access policies, audit events, staff MFA requirements and no anonymous access.
+- A clearly labelled fictional demo. Changes are stored in sessionStorage for that browser tab; the demo never calls the clinical-data API.
+- Portal exclusion from search indexing and optional analytics. Public-to-portal navigation uses a full document load so public analytics scripts are not carried into the portal.
+
+## Local preview
+
+Run `npm run dev -- --port 3100`, then visit:
+
+- http://localhost:3100/portal
+- http://localhost:3100/portal?demo=patient
+- http://localhost:3100/portal?demo=clinician
+
+Demo workflow: submit a check-in as Asha, switch to doctor view, acknowledge it, record a measurement, publish a report, then switch back to patient view. Use Reset demo to discard the fictional session. Do not enter real identifying or medical details into the demo.
+
+## Connect the secure backend
+
+1. Select a Supabase project and region approved for the clinic's intended health-data use. This code has not provisioned or altered a hosted project.
+2. Apply `supabase/migrations/202611180001_care_portal.sql` using the SQL editor or migration CLI. Review against any existing database objects first. The migration is intended for a fresh portal schema and runs in a transaction.
+3. Set these **server environment variables** in `.env.local` and the deployment provider's secret settings:
+
+   ```text
+   SUPABASE_URL=<project URL>
+   SUPABASE_ANON_KEY=<project publishable or legacy anon key>
+   SUPABASE_SERVICE_ROLE_KEY=<server-only service role key; required to send invitations>
+   ```
+
+   Never expose the service key through a `NEXT_PUBLIC_` variable or commit it. Regular clinical queries use the current user's JWT and RLS. The service key is used only for a patient invitation after staff authorisation succeeds.
+
+4. Configure a production email delivery provider in Supabase Auth. Configure Auth's public site URL and allowed redirects to the verified NeuroFicio origin. Keep invitation-only enrollment; the application uses `shouldCreateUser: false` for sign-in.
+5. Change the **Magic Link** email template to display `{{ .Token }}` as the numeric sign-in code. Do not rely on Supabase's default magic-link template; this interface deliberately uses email codes.
+6. Change the **Invite User** template to display `{{ .Token }}` and direct the recipient to `https://<your-site>/portal?invited=1`. The recipient enters the invited email address and invitation code there. Avoid putting patient names, diagnosis or notes in the email.
+7. Enable TOTP MFA in Auth. Staff are required to enroll and verify at the portal before clinical data can be loaded. Configure recovery/support procedures for a lost authenticator; the initial UI does not offer factor deletion or recovery overrides.
+8. Create the first clinician account through your approved administrative process. After verifying the clinician's identity, provision a clinic membership with SQL as described below. Do not offer public self-selection of clinical roles.
+9. Restart the application, sign in as the clinician, finish MFA setup, create a fictional pilot patient and test the entire invitation and report workflow with controlled test accounts before using real records.
+
+## First clinic and lead clinician
+
+Run from a trusted database administration context, replacing the placeholders with the actual verified Auth user ID and generated clinic ID:
+
+```sql
+insert into public.care_clinics(name)
+values ('NeuroFicio') returning id;
+
+insert into public.care_memberships(user_id, clinic_id, role)
+values ('<verified-auth-user-uuid>', '<returned-clinic-uuid>', 'lead');
+```
+
+Additional clinicians use role `clinician`. The initial version supports one clinic membership per clinician. New patients are assigned to the creating clinician; a lead can see every patient in that clinic. Reassignment is currently an administrative SQL operation. Verify that the target clinician belongs to the same clinic before changing `care_patients.clinician_id`.
+
+Invitations are a separate explicit action after record creation. If the invited email already has an Auth account, ask the patient to request a sign-in code. Verified patient accounts claim only the matching staff-created email record. Staff must verify the email and intended patient before invitation; a shared family email is not suitable for independent patient identities in this initial release.
+
+## Verification
+
+Run:
+
+```text
+npx tsc --noEmit
+node --test --test-isolation=none scripts/test-care-access.mjs scripts/test-care-validation.mjs
+npm run build
+```
+
+The SQL tests run the actual migration in an isolated embedded PostgreSQL engine with fixture Auth identities. They check patient isolation, draft-note visibility, role escalation, check-in ownership, prescribed activity validation, staff MFA, clinician assignment, cross-clinic isolation, revocation, verified-email linking and immutable audit records. They do not test the hosted Supabase Auth service, SMTP delivery or a real deployment's cookie/TLS configuration; test those separately with controlled accounts.
+
+## Scope still required before a real-patient launch
+
+This is an initial implementation, not a completed production clinical service. Email delivery, hosted Auth, backend provisioning and deployment have not been verified unless separately recorded in the handover. Complete the clinic's governance review and a staffed pilot before real use.
+
+- Confirm privacy information, consent/representative authority, retention, data access/correction procedures, clinical ownership and incident handling for the actual service locations.
+- Establish and test database and private-file backups, restore procedures and operational monitoring. The current application stores no uploaded clinical documents.
+- Add explicit care consent capture and versioned privacy acknowledgement before real-patient onboarding.
+- Add durable record-read auditing if required by the clinic. The initial audit table records writes, reviews, account linking and invitations; it does not represent a complete read-access audit.
+- Add document uploads/private download authorisation, caregiver accounts, secure messages, reminder queues and staffing/escalation rules in a subsequent release. None is simulated as a working live service here.
+- Reports record measurements, check-in counts, shared notes, plan snapshot and clinician interpretation. They do not calculate a clinical recovery percentage or claim daily adherence for dates with no response.
+- A report's clinical review is the clinician's explicit publish action; this is not a regulated electronic-signature or medication-prescribing system.
+- Saved internal drafts cannot be edited/published in place in this initial release. Create a new shared note to publish patient-facing advice; use a new clearly identified amendment to correct an existing entry.
+- Appointments can be scheduled and viewed. Rescheduling/cancellation, user profile changes, deletion and exports beyond the report print view need additional workflows.
+- Check-ins are one per patient per day and may cover today or the previous seven days. A patient should contact the team to correct an existing check-in.
+- Clinical records are loaded into the current authenticated browser view. Signing out clears application state; avoid shared computers and browser printing for confidential records without the clinic's procedures.
+
+## Deployment
+
+Deploy this existing Next.js project through its established hosting provider. No new Sites project, domain change or alternative public copy is needed. Configure production secrets there, apply the database migration first and verify portal response headers, HTTPS cookies, SMTP, staff MFA and patient isolation in the deployed environment. The existing public website continues to use its established routes and content.

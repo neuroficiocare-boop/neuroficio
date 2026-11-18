@@ -6,6 +6,7 @@
 .site-header .desktop-nav>a:hover,.site-header .desktop-nav [aria-current=page],.site-header .nav-disclosure[open] summary,.site-header .nav-disclosure summary.active{color:#91e8d0}
 .site-header .header-enquiry{background:#90e6cc;color:#092e3c;border-color:#90e6cc;box-shadow:0 3px 12px #00000012}
 .site-header .header-enquiry:hover{background:#b1f1de}
+.site-header .header-portal{color:#b4f0dc}
 .site-header .menu-toggle{color:white;border-color:#ffffff55;background:#ffffff0a}
 .site-header .nav-panel{color:var(--ink);background:#fdfdf9;border-color:#d5e5dd;box-shadow:0 20px 48px #00192426}
 .site-header .nav-panel .menu-caption{color:var(--teal-dark)}
