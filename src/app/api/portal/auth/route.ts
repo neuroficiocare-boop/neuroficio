@@ -21,7 +21,9 @@ export async function POST(request: Request) {
     if (raw.length > 12000) throw new PortalError('Request is too large.', 413);
     const body = JSON.parse(raw);
     if (body.action === 'logout') {
-      try { const { db } = await authenticated(); await db.auth.signOut({ scope: 'local' }); } finally { await clearSession(); }
+      try { const { db } = await authenticated(); await db.auth.signOut({ scope: 'local' }); }
+      catch { /* Local sign-out must also work after expiry or a service outage. */ }
+      finally { await clearSession(); }
       return json({ ok: true });
     }
     if (body.action === 'send-code') {

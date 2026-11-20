@@ -3,8 +3,11 @@ import { cookies } from 'next/headers';
 import { createClient, type Session, type SupabaseClient } from '@supabase/supabase-js';
 import { PortalError } from './validation';
 import { verifierStorage } from './pkce-storage';
+import { portalConfigurationReady } from './configuration';
 
-export function configured() { return Boolean(process.env.SUPABASE_URL && process.env.SUPABASE_ANON_KEY); }
+export function configured() {
+  return portalConfigurationReady({ CARE_PORTAL_ENABLED: process.env.CARE_PORTAL_ENABLED, SUPABASE_URL: process.env.SUPABASE_URL, SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY });
+}
 export function emailMode(): 'link' | 'code' { return process.env.SUPABASE_EMAIL_MODE === 'code' ? 'code' : 'link'; }
 export async function pkceClient() {
   if (!configured()) throw new PortalError('The secure care service is not connected yet.', 503);

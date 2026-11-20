@@ -55,3 +55,29 @@ test('Independent PKCE flow slots do not overwrite one another', () => {
   assert.equal(adapter.getItem('nf-auth-flow-bbbb-code-verifier'), 'second');
   assert.throws(() => adapter.setItem('nf-auth-code-verifier', 'x'.repeat(3001)));
 });
+
+test('Refreshing example wording preserves patient records and user-entered changes', async () => {
+  const source = await readFile(new URL('../src/lib/portal/demo.ts', import.meta.url), 'utf8');
+  const compiled = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 } }).outputText;
+  const { demoData, refreshExampleWording } = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`);
+  const original = demoData();
+  original.checkins[0].comment = 'A reviewer-entered note that must be retained.';
+  original.reports[0].snapshot.author = 'Demonstration clinician · fictional report';
+  const updated = refreshExampleWording(original);
+  assert.deepEqual(updated.patients, original.patients);
+  assert.deepEqual(updated.observations, original.observations);
+  assert.equal(updated.checkins[0].comment, original.checkins[0].comment);
+  assert.equal(updated.reports[0].snapshot.author, 'NeuroFicio care team');
+  assert.equal(original.reports[0].snapshot.author, 'Demonstration clinician · fictional report');
+});
+
+test('Unfinished connection settings cannot enable email access', async () => {
+  const source = await readFile(new URL('../src/lib/portal/configuration.ts', import.meta.url), 'utf8');
+  const compiled = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 } }).outputText;
+  const { portalConfigurationReady } = await import(`data:text/javascript;base64,${Buffer.from(compiled).toString('base64')}`);
+  const settings = { SUPABASE_URL: 'https://example.supabase.co', SUPABASE_ANON_KEY: 'public-key' };
+  assert.equal(portalConfigurationReady(settings), false);
+  assert.equal(portalConfigurationReady({ ...settings, CARE_PORTAL_ENABLED: 'false' }), false);
+  assert.equal(portalConfigurationReady({ ...settings, CARE_PORTAL_ENABLED: 'true' }), true);
+  assert.equal(portalConfigurationReady({ CARE_PORTAL_ENABLED: 'true' }), false);
+});

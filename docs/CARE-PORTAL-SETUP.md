@@ -31,9 +31,12 @@ Demo workflow: submit a check-in as Asha, switch to doctor view, acknowledge it,
    SUPABASE_URL=<project URL>
    SUPABASE_ANON_KEY=<project publishable or legacy anon key>
    SUPABASE_SERVICE_ROLE_KEY=<server-only service role key; required to send invitations>
+   CARE_PORTAL_ENABLED=true
    ```
 
    Never expose the service key through a `NEXT_PUBLIC_` variable or commit it. Regular clinical queries use the current user's JWT and RLS. The service key is used only for a patient invitation after staff authorisation succeeds.
+
+   Keep `CARE_PORTAL_ENABLED=false` while the connection is being prepared. Set it to `true` only after the Production credential and invitation configuration have been checked, then redeploy. The example patient views remain available while email access is disabled.
 
 4. Set Auth's Site URL to `https://www.neuroficio.com/portal` and restrict any additional redirect destinations to approved portal origins. Keep invitation-only enrollment; the application uses `shouldCreateUser: false` for sign-in.
 5. The default `SUPABASE_EMAIL_MODE=link` works with Supabase's standard Magic Link email. The portal stores a short-lived PKCE verifier in an HttpOnly cookie, exchanges the callback code on the server and keeps session tokens out of browser storage. Links must be opened in the browser that requested them within 15 minutes. The default review email service may deliver only to project-team addresses and has restrictive quotas; configure custom SMTP before onboarding other patients.
