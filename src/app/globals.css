@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-.header-portal{font-size:11px;font-weight:600;white-space:nowrap;color:var(--teal-dark);padding:10px 0;text-decoration:underline;text-underline-offset:4px}
-@media(max-width:760px){.header-portal{font-size:10px;padding:8px 0}}
 
 /* Visible service catalogue and international navigation. */
 .service-categories{background:#edf2ea}
@@ -2223,7 +2221,8 @@ html{scroll-padding-top:190px}
 .hero-description{max-width:55ch}
 @media(max-width:760px){.international-care-nav>.container{grid-template-columns:repeat(2,minmax(0,1fr))}.international-care-nav a{font-size:10px;min-height:44px;padding:8px 9px}.international-care-nav a:nth-child(odd){border-left:1px solid var(--line)}.international-care-nav a:nth-child(-n+2){border-bottom:1px solid var(--line)}.hero-copy h1{font-size:clamp(34px,8.5vw,45px);letter-spacing:-1.1px}.hero-description{font-size:15px;line-height:1.8}html{scroll-padding-top:205px}}
 
-.header-portal{border:1px solid #2f6f5c;color:#244c40;background:#f4f8f0;white-space:nowrap;min-height:44px;padding:11px 16px}
-.header-portal:hover{background:#e6efdf}
+.header-actions .header-portal{border:1px solid #245b49;color:#fff;background:#245b49;white-space:nowrap;min-height:46px;padding:12px 18px;font-size:13px;font-weight:700;text-decoration:none;box-shadow:0 3px 8px #213d351f;flex-shrink:0}
+.header-actions .header-portal:hover{background:#173f32;border-color:#173f32;color:#fff}
+.header-actions .header-portal:focus-visible{outline:3px solid #b77a31;outline-offset:3px}
 @media(max-width:1100px){.header-actions .header-enquiry{display:none}}
-@media(max-width:480px){.header-portal{font-size:11px;padding:9px 10px}.header-portal svg{display:none}}
+@media(max-width:480px){.header-actions .header-portal{font-size:12px;padding:11px 12px}.header-portal svg{display:none}}
