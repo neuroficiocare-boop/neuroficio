@@ -113,6 +113,18 @@ test('Care portal PostgreSQL access policies', async t => {
       await assert.rejects(db.exec('select care_claim_patient()'));
       await assert.rejects(db.exec(`select care_is_staff('${id(20)}')`));
     });
+    await t.test('staff can save a new care member and load it in the next request', async () => {
+      await as(2);
+      await db.query(`insert into care_patients(id,name,email,condition,clinic_id,clinician_id) values ('${id(24)}','New member','newmember@example.test','Home rehabilitation','${id(10)}','${id(2)}')`);
+      assert.deepEqual((await db.query('select name from care_patients where id=$1', [id(24)])).rows, [{ name: 'New member' }]);
+      await as(3);
+      assert.equal((await db.query('select id from care_patients where id=$1', [id(24)])).rows.length, 0);
+      await as(5);
+      assert.equal((await db.query('select id from care_patients where id=$1', [id(24)])).rows.length, 0);
+      await as(2);
+      await assert.rejects(db.query(`insert into care_patients(name,email,condition,clinic_id,clinician_id) values ('Duplicate','newmember@example.test','Home rehabilitation','${id(10)}','${id(2)}')`), error => error.code === '23505');
+      await assert.rejects(db.query(`insert into care_patients(name,email,condition,clinic_id,clinician_id) values ('Other clinic','other@example.test','Home rehabilitation','${id(11)}','${id(2)}')`));
+    });
     await t.test('writes retain an audit trail without copying clinical text', async () => {
       await as(1);
       const audit = (await db.query('select event, actor from care_audit')).rows;

@@ -37,8 +37,13 @@ export async function POST(request: Request) {
     const action = text(body.action, 'Action', 40);
     if (action === 'create-patient') {
       if (!staff) throw new PortalError('Only clinical staff can create patient records.', 403);
-      const patient = checked(await db.from('care_patients').insert({ name: text(body.name, 'Patient name', 100), email: email(body.email), condition: text(body.condition, 'Care pathway', 150), clinic_id: account.clinic_id, clinician_id: user.id }).select().single());
-      return json({ ok: true, patient_id: patient.id, message: 'Patient record created. Send an invitation when you have verified the recipient.' });
+      const patientId = crypto.randomUUID();
+      // INSERT ... RETURNING evaluates the SELECT policy before its stable
+      // lookup helper can see the new row. Read it in the next request instead.
+      const result = await db.from('care_patients').insert({ id: patientId, name: text(body.name, 'Care member name', 100), email: email(body.email), condition: text(body.condition, 'Care pathway', 150), clinic_id: account.clinic_id, clinician_id: user.id });
+      if (result.error?.code === '23505') throw new PortalError('A care member record already exists for this email in your clinic. Find and open the existing record.', 409);
+      checked(result);
+      return json({ ok: true, patient_id: patientId, message: 'Care member record created. Send an invitation when you have verified the recipient.' });
     }
     const patientId = uuid(body.patient_id);
     const patient = checked(await db.from('care_patients').select('*').eq('id', patientId).maybeSingle());
