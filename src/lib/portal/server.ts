@@ -18,7 +18,7 @@ export async function pkceClient() {
   } });
 }
 export function client() {
-  if (!configured()) throw new PortalError('The secure care service is not connected yet. You can explore the fictional demo.', 503);
+  if (!configured()) throw new PortalError('The secure care service is not connected yet. Please contact your care team.', 503);
   return createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
 }
 export async function saveSession(session: Session) {
@@ -29,7 +29,7 @@ export async function saveSession(session: Session) {
 }
 export async function clearSession() {
   const store = await cookies();
-  for (const name of ['nf-access', 'nf-refresh']) store.set(name, '', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/api/portal', maxAge: 0 });
+  for (const name of ['nf-access', 'nf-refresh', 'nf-password-setup']) store.set(name, '', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/api/portal', maxAge: 0 });
   for (const cookie of store.getAll()) if (cookie.name.startsWith('nf-pkce-')) store.set(cookie.name, '', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/api/portal', maxAge: 0 });
 }
 export async function authenticated() {
@@ -45,7 +45,12 @@ export async function authenticated() {
   if (sessionData.session.access_token !== access_token) await saveSession(sessionData.session);
   return { db, user: data.user };
 }
+export async function passwordSetupPending() { return Boolean((await cookies()).get('nf-password-setup')?.value); }
+export async function markPasswordSetup(pending: boolean) {
+  (await cookies()).set('nf-password-setup', pending ? '1' : '', { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/api/portal', maxAge: pending ? 900 : 0 });
+}
 export async function identity(db: SupabaseClient) {
+  if (await passwordSetupPending()) throw new PortalError('Finish setting your password before opening care records.', 403);
   const { data, error } = await db.from('care_memberships').select('role, clinic_id').maybeSingle();
   if (error) throw new PortalError('Care account permissions could not be loaded.', 503);
   if (data) {

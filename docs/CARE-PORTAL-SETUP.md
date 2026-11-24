@@ -1,3 +1,11 @@
+## Password access update ? 24 November 2026
+
+The portal now uses email and password for returning visits. Accounts remain invitation-only; choosing Doctor or Care member does not grant permissions. New invitations ask the recipient to confirm their email and choose a password of 12?128 characters. Existing signed-in users can choose **Set or change password**. Signed-out users choose their login type, then **First visit or forgot your password?** to request a PKCE-protected setup/reset email; open it in the same browser within 15 minutes. Passwords are managed by Supabase Auth and are never stored in application tables or browser storage.
+
+Public example-entry buttons and `?demo=` access were removed. Example fixture definitions remain in source for review/tests, but are no longer imported by the portal. Live records always require a verified account and row-level authorization. Previous demo instructions below are historical.
+
+Validation: `node --test --test-isolation=none scripts/test-care-auth.mjs scripts/test-care-access.mjs scripts/test-care-validation.mjs`. The new auth tests use a mocked provider to exercise session handling, generic errors, password setup, invitation email matching, CSRF and recovery failures. Actual email delivery and entering a chosen password require the owner?s own browser interaction. Supabase?s default email quota and recipient restrictions still apply until custom SMTP is connected.
+
 > Current configuration (24 November 2026): staff authenticator enforcement is temporarily disabled at the owner?s request. Apply `202611240001_staff_email_access.sql` after the initial migration. Email verification, clinic membership, clinician assignment and patient isolation still apply. To restore enforcement, replace `care_staff_mfa_required()` with the same SQL function returning `true`; the application and database both read this setting. Existing enrolled factors are preserved. The MFA instructions below describe that enforced configuration.
 
 # NeuroFicio Care Portal: setup and release notes

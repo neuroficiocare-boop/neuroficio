@@ -3,10 +3,8 @@
 import Link from 'next/link';
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 import { Activity, ArrowRight, ArrowUpRight, CalendarDays, Check, CheckCircle2, ChevronRight, ClipboardList, FileText, Heart, LayoutDashboard, LogOut, Plus, Printer, RefreshCw, Search, ShieldCheck, Stethoscope, TrendingUp, Users } from 'lucide-react';
-import { demoData, refreshExampleWording } from '@/lib/portal/demo';
 import type { Mutation, Observation, PortalData, Report, Tab } from '@/lib/portal/types';
 
-const demoKey = 'neuroficio-fictional-demo-v2';
 const today = () => new Date().toISOString().slice(0, 10);
 const date = (value: string) => new Date(value.length === 10 ? `${value}T12:00:00Z` : value).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 const time = (value: string) => new Date(value).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' });
@@ -80,11 +78,11 @@ function ReportView({ report, demo }: { report: Report; demo: boolean }) {
   </article>;
 }
 
-type AuthStatus = { email: string; staff: boolean; mfaRequired: boolean; verified: boolean; factors: { id: string; name?: string }[] };
+type AuthStatus = { passwordSetup: boolean; email: string; staff: boolean; mfaRequired: boolean; verified: boolean; factors: { id: string; name?: string }[] };
 
-export default function CarePortal({ connected, emailMode = 'link' }: { connected: boolean; emailMode?: 'link' | 'code' }) {
+export default function CarePortal({ connected }: { connected: boolean }) {
   const [data, setData] = useState<PortalData | null>(null);
-  const [demo, setDemo] = useState(false);
+  const demo = false;
   const [loading, setLoading] = useState(connected);
   const [busy, setBusy] = useState(false);
   const [tab, setTab] = useState<Tab>('overview');
@@ -96,24 +94,15 @@ export default function CarePortal({ connected, emailMode = 'link' }: { connecte
   const [loginRole, setLoginRole] = useState<'doctor' | 'member' | null>(null);
   const [address, setAddress] = useState('');
   const [codeSent, setCodeSent] = useState(false);
-  const [invitation, setInvitation] = useState(false);
+  const [passwordSetup, setPasswordSetup] = useState(false);
+  const [resetMode, setResetMode] = useState(false);
   const [inviteTokens, setInviteTokens] = useState<{ access_token: string; refresh_token: string } | null>(null);
   const [enrollment, setEnrollment] = useState<{ id: string; qr: string; secret: string } | null>(null);
-
-  function enterDemo(role: 'patient' | 'lead') {
-    let initial = demoData();
-    try {
-      const saved = JSON.parse(sessionStorage.getItem(demoKey) || 'null');
-      if (saved?.patients?.[0]?.id === 'demo-asha' && Array.isArray(saved.plans) && Array.isArray(saved.reports)) initial = refreshExampleWording(saved);
-    } catch { /* A fresh fictional session remains available. */ }
-    initial.role = role; initial.email = role === 'patient' ? 'asha@example.test' : 'doctor@example.test';
-    setData(initial); setSelected(initial.patients[0]?.id ?? ''); setDemo(true); setAuth(null); setLoading(false); setTab('overview'); setError(''); setNotice('');
-    window.history.replaceState(null, '', `/portal?demo=${role === 'patient' ? 'patient' : 'clinician'}`);
-  }
 
   async function loadAccount() {
     const status = await api('auth') as AuthStatus;
     setAuth(status);
+    if (status.passwordSetup) { setPasswordSetup(true); setLoading(false); return; }
     if (status.staff && status.mfaRequired && !status.verified) { setLoading(false); return; }
     const next = await api('data') as PortalData;
     setData(next); setSelected(current => next.patients.some(p => p.id === current) ? current : next.patients[0]?.id ?? '');
@@ -140,13 +129,14 @@ export default function CarePortal({ connected, emailMode = 'link' }: { connecte
         authenticate({ action: 'exchange-link', code: query.get('code'), flow_id: query.get('sb_flow_id') }).finally(() => setLoading(false));
         return;
       }
-      if (fragment.get('type') === 'invite' && fragment.get('access_token') && fragment.get('refresh_token')) {
+      if (['invite', 'recovery'].includes(fragment.get('type') ?? '') && fragment.get('access_token') && fragment.get('refresh_token')) {
         setInviteTokens({ access_token: fragment.get('access_token')!, refresh_token: fragment.get('refresh_token')! }); setLoading(false); return;
       }
       setError('Please request a new sign-in link from this portal.'); setLoading(false); return;
     }
-    if (query.has('demo')) { enterDemo(query.get('demo') === 'clinician' ? 'lead' : 'patient'); return; }
-    if (query.has('invited')) { setInvitation(true); setCodeSent(true); }
+    // Legacy preview links no longer open records without authentication.
+    if (query.has('demo')) window.history.replaceState(null, '', '/portal');
+
     if (connected) loadAccount().catch((e: Error) => { if (!(e instanceof CareApiError) || e.status !== 401) setError(e.message); setLoading(false); });
     // Account data is loaded once on entry; all mutations explicitly refresh it.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -156,7 +146,7 @@ export default function CarePortal({ connected, emailMode = 'link' }: { connecte
     setBusy(true); setError('');
     try {
       if (!demo) await api('auth', { action: 'logout' });
-      setData(null); setAuth(null); setDemo(false); setEnrollment(null); setInviteTokens(null); setNotice(''); setCodeSent(false); setTab('overview');
+      setData(null); setAuth(null);  setEnrollment(null); setInviteTokens(null); setPasswordSetup(false); setResetMode(false); setNotice(''); setCodeSent(false); setTab('overview');
       window.history.replaceState(null, '', '/portal');
     } catch (e) { setError((e as Error).message); }
     finally { setBusy(false); }
@@ -167,8 +157,9 @@ export default function CarePortal({ connected, emailMode = 'link' }: { connecte
     try {
       const result = await api('auth', action);
       if (result.message) { setNotice(result.message); setCodeSent(true); }
+      else if (result.passwordSetup) { setPasswordSetup(true); setInviteTokens(null); }
       else if (result.qr) setEnrollment(result);
-      else { setEnrollment(null); setInviteTokens(null); await loadAccount(); }
+      else { setEnrollment(null); setInviteTokens(null); setPasswordSetup(false); setResetMode(false); await loadAccount(); }
     } catch (e) { setError((e as Error).message); }
     finally { setBusy(false); }
   }
@@ -191,42 +182,14 @@ export default function CarePortal({ connected, emailMode = 'link' }: { connecte
     setBusy(true); setError(''); setNotice('');
     const action: Mutation & { patient_id: string } = { ...input, patient_id: input.patient_id ?? selected };
     try {
-      if (!demo) {
-        const result = await api('data', action);
-        const next = await api('data') as PortalData; setData(next);
-        if (result.patient_id) { setSelected(result.patient_id); setTab('overview'); }
-        setNotice(result.message ?? 'Saved successfully.');
-      } else {
-        const next = structuredClone(data), id = `demo-${crypto.randomUUID()}`, created_at = new Date().toISOString(), patient_id = String(action.patient_id);
-        if (action.action === 'create-patient') {
-          next.patients.push({ id, name: String(action.name), email: String(action.email), condition: String(action.condition), clinic_id: 'demo', clinician_id: 'demo-doctor', user_id: null, created_at }); setSelected(id); setTab('overview');
-        } else if (action.action === 'plan') {
-          next.plans.unshift({ id, patient_id, title: String(action.title), precautions: String(action.precautions), review_date: String(action.review_date), activities: (action.activities as { title: string; instruction: string }[]).map((a, i) => ({ ...a, id: `${id}-${i}`, frequency: 'Daily · as prescribed' })), goals: [{ title: String(action.goal), target: String(action.target) }], created_at });
-        } else if (action.action === 'checkin') {
-          if (next.checkins.some(c => c.patient_id === patient_id && c.day === action.day)) throw new Error('A check-in is already recorded for this day.');
-          next.checkins.unshift({ id, patient_id, plan_id: String(action.plan_id), day: String(action.day), completed: action.completed as string[], pain: Number(action.pain), energy: Number(action.energy), comment: String(action.comment), reviewed_at: null, created_at });
-        } else if (action.action === 'note') {
-          next.notes.unshift({ id, patient_id, title: String(action.title), body: String(action.body), published: Boolean(action.published), created_at });
-        } else if (action.action === 'observation') {
-          next.observations.push({ id, patient_id, label: String(action.label), value: Number(action.value), unit: String(action.unit), direction: action.direction as 'higher' | 'lower', measured_on: String(action.measured_on), created_at });
-        } else if (action.action === 'appointment') {
-          next.appointments.push({ id, patient_id, title: String(action.title), starts_at: String(action.starts_at), location: String(action.location), created_at }); next.appointments.sort((a, b) => a.starts_at.localeCompare(b.starts_at));
-        } else if (action.action === 'review') {
-          const checkin = next.checkins.find(c => c.id === action.checkin_id); if (checkin) checkin.reviewed_at = created_at;
-        } else if (action.action === 'report' && patient) {
-          if (String(action.period_start) > String(action.period_end) || String(action.period_end) > today()) throw new Error('Choose a reporting period ending today or earlier.');
-          next.reports.unshift({ id, patient_id, title: String(action.title), summary: String(action.summary), next_steps: String(action.next_steps), created_at, snapshot: { patient_name: patient.name, condition: patient.condition, plan: plans.find(p => p.created_at.slice(0, 10) <= String(action.period_end)) ?? null, observations: observations.filter(o => o.measured_on >= String(action.period_start) && o.measured_on <= String(action.period_end)), checkins: checkins.filter(c => c.day >= String(action.period_start) && c.day <= String(action.period_end)), notes: notes.filter(n => n.published && n.created_at.slice(0, 10) >= String(action.period_start) && n.created_at.slice(0, 10) <= String(action.period_end)), period_start: String(action.period_start), period_end: String(action.period_end), author: 'Care team · progress report' } });
-        }
-        setData(next);
-        try { sessionStorage.setItem(demoKey, JSON.stringify(next)); } catch { /* Session can still be explored without browser storage. */ }
-        setNotice('Saved in this browser session. Switch views to follow the care journey.');
-      }
+      const result = await api('data', action);
+      const next = await api('data') as PortalData; setData(next);
+      if (result.patient_id) { setSelected(result.patient_id); setTab('overview'); }
+      setNotice(result.message ?? 'Saved successfully.');
       return true;
     } catch (e) { setError((e as Error).message); return false; }
     finally { setBusy(false); }
   }
-
-  const signInLabel = busy ? 'Please wait...' : inviteTokens ? 'Confirm email and accept invitation' : codeSent && (emailMode === 'code' || invitation) ? 'Verify and continue' : emailMode === 'link' ? (codeSent ? 'Send another sign-in link' : 'Email me a sign-in link') : 'Email me a sign-in code';
 
   const messages = <div className="cp-messages">{error && <div className="cp-alert cp-error" role="alert">{error}</div>}{notice && <div className="cp-alert cp-success" role="status"><CheckCircle2 size={18} />{notice}</div>}</div>;
 
@@ -239,13 +202,24 @@ export default function CarePortal({ connected, emailMode = 'link' }: { connecte
       {(enrollment || auth.factors.length > 0) && <form onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget); authenticate({ action: 'verify-mfa', factor_id: f.get('factor_id'), code: f.get('code') }); }}><fieldset disabled={busy}>{auth.factors.length > 1 ? <Field label="Authenticator"><select name="factor_id">{auth.factors.map(f => <option value={f.id} key={f.id}>{f.name ?? 'Authenticator'}</option>)}</select></Field> : <input type="hidden" name="factor_id" value={enrollment?.id ?? auth.factors[0]?.id ?? ''} />}<Field label="Six-digit authenticator code"><input name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} required /></Field><button className="cp-button">{busy ? 'Verifying…' : 'Open clinical workspace'}<ArrowRight size={16} /></button></fieldset></form>}
       <button className="cp-text-button" onClick={signOut} disabled={busy}>Sign out</button>
     </> : <>
-      <span className="cp-icon-tile"><ShieldCheck /></span><span className="cp-kicker">Welcome to NeuroFicio</span><h2>{inviteTokens ? "Accept your care invitation" : loginRole === "doctor" ? "Doctor login" : loginRole === "member" ? "Care member login" : "Welcome to your care portal"}</h2><p>{inviteTokens ? "Confirm the email address your invitation was sent to. This opens that account only." : loginRole ? "Use your registered email address. Your account determines which workspace opens." : "Choose how you would like to sign in."}</p>{messages}
-      {!inviteTokens && !invitation && <div className="cp-login-options" aria-label="Choose your login"><button type="button" aria-pressed={loginRole === 'doctor'} className={`cp-login-option ${loginRole === 'doctor' ? 'active' : ''}`} disabled={busy} onClick={() => { setLoginRole('doctor'); setCodeSent(false); setNotice(''); setError(''); }}><Stethoscope size={24} /><strong>Doctor login</strong><span>Manage care plans, reviews and progress.</span><ArrowRight size={18} /></button><button type="button" aria-pressed={loginRole === 'member'} className={`cp-login-option ${loginRole === 'member' ? 'active' : ''}`} disabled={busy} onClick={() => { setLoginRole('member'); setCodeSent(false); setNotice(''); setError(''); }}><Heart size={24} /><strong>Care member login</strong><span>Follow your care plan and see your progress.</span><ArrowRight size={18} /></button></div>}
-      {(loginRole || inviteTokens || invitation) && <>
-      {connected ? <form onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget); authenticate(inviteTokens ? { action: 'accept-invitation-link', email: address, ...inviteTokens } : codeSent && (emailMode === 'code' || invitation) ? { action: 'verify-code', email: address, code: f.get('code'), invitation } : { action: 'send-code', email: address }); }}><fieldset disabled={busy}><Field label="Email address"><input type="email" required value={address} onChange={e => setAddress(e.target.value)} autoComplete="email" maxLength={254} placeholder="you@example.com" /></Field>{codeSent && (emailMode === 'code' || invitation) && !inviteTokens && <Field label={invitation ? 'Invitation code from your email' : 'Sign-in code from your email'}><input name="code" required inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6,10}" minLength={6} maxLength={10} /></Field>}<button className="cp-button cp-wide">{signInLabel}<ArrowRight size={17} /></button></fieldset></form> : <div className="cp-alert">The care team is preparing email access. You can review the example care member journeys below.</div>}
-      {connected && !inviteTokens && <div className="cp-login-links"><button className="cp-text-button" disabled={busy} onClick={() => { setCodeSent(!codeSent); setInvitation(!codeSent); setNotice(''); }}>{codeSent ? 'Back to sign-in' : 'I have an invitation code'}</button><p>New care member? Your care team will invite you.</p></div>}
-      </>}
-      <div className="cp-demo-entry"><span className="cp-kicker">Explore the care portal</span><p>Review the care member and care-team journeys using example care member records.</p><div><button className="cp-button cp-secondary" onClick={() => enterDemo('patient')}>Care member view <ArrowRight size={15} /></button><button className="cp-button cp-secondary" onClick={() => enterDemo('lead')}>Doctor view <ArrowRight size={15} /></button></div></div>
+      <span className="cp-icon-tile"><ShieldCheck /></span><span className="cp-kicker">Welcome to NeuroFicio</span>
+      <h2>{passwordSetup || inviteTokens ? 'Create your password' : resetMode ? 'Set up or reset your password' : loginRole === 'doctor' ? 'Doctor login' : loginRole === 'member' ? 'Care member login' : 'Welcome to your care portal'}</h2>
+      <p>{passwordSetup || inviteTokens ? 'Choose a password you will use for future visits. Use at least 12 characters.' : resetMode ? 'We will email a link to your registered address. Open it in this browser to choose your password.' : loginRole ? 'Sign in with your registered email and password. Your account determines which workspace opens.' : 'Choose how you would like to sign in.'}</p>{messages}
+      {!passwordSetup && !inviteTokens && !resetMode && <div className="cp-login-options" aria-label="Choose your login">{(['doctor', 'member'] as const).map(role => <button key={role} type="button" aria-pressed={loginRole === role} className={`cp-login-option ${loginRole === role ? 'active' : ''}`} disabled={busy} onClick={() => { setLoginRole(role); setNotice(''); setError(''); }}>{role === 'doctor' ? <Stethoscope size={24} /> : <Heart size={24} />}<strong>{role === 'doctor' ? 'Doctor login' : 'Care member login'}</strong><span>{role === 'doctor' ? 'Manage care plans, reviews and progress.' : 'Follow your care plan and see your progress.'}</span><ArrowRight size={18} /></button>)}</div>}
+      {(loginRole || inviteTokens || passwordSetup || resetMode) && (connected ? <form onSubmit={async e => {
+        e.preventDefault(); const form = e.currentTarget; const f = new FormData(form);
+        if ((passwordSetup || inviteTokens) && f.get('password') !== f.get('confirm_password')) { setError('The passwords do not match.'); return; }
+        const action = inviteTokens ? { action: 'accept-invitation-link', email: address, password: f.get('password'), ...inviteTokens } : passwordSetup ? { action: 'set-password', password: f.get('password') } : resetMode ? { action: 'request-password-reset', email: address } : { action: 'password-login', email: address, password: f.get('password') };
+        await authenticate(action);
+        form.querySelectorAll<HTMLInputElement>('input[type="password"]').forEach(input => { input.value = ''; });
+      }}><fieldset disabled={busy}>
+        {!passwordSetup && <Field label="Email address"><input type="email" required value={address} onChange={e => setAddress(e.target.value)} autoComplete="username" maxLength={254} placeholder="you@example.com" /></Field>}
+        {!resetMode && <Field label={passwordSetup || inviteTokens ? 'New password' : 'Password'}><input name="password" type="password" required minLength={passwordSetup || inviteTokens ? 12 : 1} maxLength={128} autoComplete={passwordSetup || inviteTokens ? 'new-password' : 'current-password'} /></Field>}
+        {(passwordSetup || inviteTokens) && <Field label="Confirm new password"><input name="confirm_password" type="password" required minLength={12} maxLength={128} autoComplete="new-password" /></Field>}
+        <button className="cp-button cp-wide">{busy ? 'Please wait?' : passwordSetup || inviteTokens ? 'Save password and continue' : resetMode ? codeSent ? 'Send another setup link' : 'Email password setup link' : 'Sign in'}<ArrowRight size={17} /></button>
+      </fieldset></form> : <div className="cp-alert">Email access is temporarily unavailable. Please contact your care team.</div>)}
+      {connected && !inviteTokens && !passwordSetup && loginRole && <div className="cp-login-links"><button className="cp-text-button" disabled={busy} onClick={() => { setResetMode(!resetMode); setCodeSent(false); setNotice(''); setError(''); }}>{resetMode ? 'Back to sign-in' : 'First visit or forgot your password?'}</button><p>New care member? Your care team will invite you.</p></div>}
+      {(passwordSetup || inviteTokens) && <button className="cp-text-button" disabled={busy} onClick={signOut}>Cancel and sign out</button>}
       <small className="cp-login-privacy"><ShieldCheck size={14} />Email verification · Individual care member access</small>
     </>}</section></div><footer className="cp-login-footer">NeuroFicio by Therapy Partners <span>Care portal · Initial release</span></footer></main>;
 
@@ -254,8 +228,7 @@ export default function CarePortal({ connected, emailMode = 'link' }: { connecte
   const nextAppointment = appointments.find(a => Date.parse(a.starts_at) >= Date.now());
 
   return <div className={`cp-app ${staff ? 'cp-clinical' : 'cp-patient'}`}><a className="cp-skip" href="#care-content">Skip to care content</a>
-    {demo && <div className="cp-demo-bar"><span>NeuroFicio Care Portal</span><div><button onClick={() => enterDemo(staff ? 'patient' : 'lead')}>Switch to {staff ? 'care member' : 'doctor'} view <ArrowRight size={14} /></button><button onClick={() => { sessionStorage.removeItem(demoKey); enterDemo(staff ? 'lead' : 'patient'); }}>Reset records</button></div></div>}
-    <aside className="cp-sidebar"><Link href="/" className="cp-wordmark">neuro<span>ficio</span><small>CARE PORTAL</small></Link><div className="cp-space-label">{staff ? 'Clinical workspace' : 'Your recovery space'}</div><nav aria-label="Care portal">{tabs.filter(t => staff || t.id !== 'patients').map(({ id, label, icon: Icon }) => <button key={id} className={tab === id ? 'active' : ''} aria-current={tab === id ? 'page' : undefined} onClick={() => navigate(id)}><Icon size={19} /><span>{staff && id === 'notes' ? 'Clinical notes' : label}</span>{staff && id === 'checkin' && openReviews.length > 0 && <small>{openReviews.length}</small>}</button>)}</nav><div className="cp-sidebar-bottom"><div className="cp-help"><Heart size={20} /><strong>Care is a shared journey.</strong><p>Small steps and regular reviews help your team understand your needs.</p></div><Link href="/contact">Contact NeuroFicio <ArrowUpRight size={15} /></Link><button onClick={signOut} disabled={busy}><LogOut size={17} />{demo ? 'Back to sign-in' : 'Sign out'}</button></div></aside>
+    <aside className="cp-sidebar"><Link href="/" className="cp-wordmark">neuro<span>ficio</span><small>CARE PORTAL</small></Link><div className="cp-space-label">{staff ? 'Clinical workspace' : 'Your recovery space'}</div><nav aria-label="Care portal">{tabs.filter(t => staff || t.id !== 'patients').map(({ id, label, icon: Icon }) => <button key={id} className={tab === id ? 'active' : ''} aria-current={tab === id ? 'page' : undefined} onClick={() => navigate(id)}><Icon size={19} /><span>{staff && id === 'notes' ? 'Clinical notes' : label}</span>{staff && id === 'checkin' && openReviews.length > 0 && <small>{openReviews.length}</small>}</button>)}</nav><div className="cp-sidebar-bottom"><div className="cp-help"><Heart size={20} /><strong>Care is a shared journey.</strong><p>Small steps and regular reviews help your team understand your needs.</p></div><Link href="/contact">Contact NeuroFicio <ArrowUpRight size={15} /></Link><button disabled={busy} onClick={() => { setPasswordSetup(true); setData(null); setNotice(''); setError(''); }}><ShieldCheck size={17} />Set or change password</button><button onClick={signOut} disabled={busy}><LogOut size={17} />{demo ? 'Back to sign-in' : 'Sign out'}</button></div></aside>
     <div className="cp-workspace"><header className="cp-topbar"><div><span className="cp-kicker">{staff ? 'Care team' : 'Care member portal'}</span><span className="cp-topbar-date">{date(today())}</span></div><div className="cp-account">{!demo && <button className="cp-text-button" disabled={busy} onClick={refreshAccount} aria-label="Refresh care record"><RefreshCw size={17} /></button>}<span className="cp-avatar">{staff ? 'DR' : (patient?.name[0] ?? 'P')}</span><span><strong>{staff ? (data.role === 'lead' ? 'Lead clinician' : 'Treating clinician') : (patient?.name ?? 'Care member account')}</strong><small>{data.email}</small></span></div></header>
       <main id="care-content" className="cp-content" tabIndex={-1}><div className="cp-page-heading"><div><div className="cp-breadcrumb">Care portal <ChevronRight size={12} />{tabs.find(t => t.id === tab)?.label}</div><h1>{tab === 'overview' ? (staff ? 'A clear view of your care.' : `Hello, ${patient?.name.split(' ')[0] ?? 'there'}.`) : tab === 'patients' ? 'Every care member. A personal journey.' : tabs.find(t => t.id === tab)?.label}</h1><p>{tab === 'overview' ? (staff ? 'Keep care coordinated, review progress and plan the next step.' : 'Your next step starts here. Let’s keep moving forward, together.') : patient ? `${patient.name} · ${patient.condition}` : 'Select or add a care member to begin.'}</p></div>{!staff && plan && tab === 'overview' && <button className="cp-button" onClick={() => navigate('checkin')}>Record today’s check-in <Plus size={17} /></button>}</div>
       {staff && data.patients.length > 0 && tab !== 'patients' && <div className="cp-care member-picker"><Users size={18} /><label htmlFor="care-patient">Care member record</label><select id="care-patient" value={selected} onChange={e => { setSelected(e.target.value); setNotice(''); setError(''); }}>{data.patients.map(p => <option value={p.id} key={p.id}>{p.name} · {p.condition}</option>)}</select>{data.role === 'lead' && <span className="cp-badge">Clinic-wide access</span>}</div>}
@@ -305,7 +278,7 @@ export default function CarePortal({ connected, emailMode = 'link' }: { connecte
         {reports.length ? reports.map(r => <ReportView key={r.id} report={r} demo={demo} />) : <Empty title="A clear record of the journey">{staff ? 'Review the care member’s measurements and publish the first progress report above.' : 'Your clinician will publish a progress report after reviewing your care.'}</Empty>}
       </>}
       {!patient && tab !== 'patients' && tab !== 'overview' && <Empty title="No care member record selected">{staff ? 'Open Care members to create or select a record.' : 'Contact the care team to check that your account is linked to the correct record.'}</Empty>}
-      <footer className="cp-care-footer"><ShieldCheck size={17} /><div>{demo && <p className="cp-example-note">Example care member records for platform review. Changes stay in this browser tab; do not enter real medical information.</p>}<p>This portal is not continuously monitored. For urgent or worsening symptoms, seek local medical care. Contact your care team to discuss changes to your programme.</p></div></footer>
+      <footer className="cp-care-footer"><ShieldCheck size={17} /><div><p>This portal is not continuously monitored. For urgent or worsening symptoms, seek local medical care. Contact your care team to discuss changes to your programme.</p></div></footer>
       </main>
     </div>
   </div>;

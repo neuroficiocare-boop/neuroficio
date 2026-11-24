@@ -32,3 +32,8 @@ export function completed(value: unknown, activityIds: string[]): string[] {
 export function sameOrigin(request: Request): void {
   if (request.headers.get('origin') !== new URL(request.url).origin) throw new PortalError('This request must originate from the care portal.', 403);
 }
+
+export function password(value: unknown, creating = false): string {
+  if (typeof value !== 'string' || value.length < (creating ? 12 : 1) || value.length > 128 || (creating && !value.trim())) throw new PortalError(creating ? 'Choose a password between 12 and 128 characters.' : 'Enter your password.');
+  return value;
+}

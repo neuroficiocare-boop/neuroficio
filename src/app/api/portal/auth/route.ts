@@ -1,5 +1,5 @@
-import { authenticated, checked, clearSession, client, emailMode, failure, json, pkceClient, saveSession } from '@/lib/portal/server';
-import { email, PortalError, sameOrigin, text, uuid } from '@/lib/portal/validation';
+import { authenticated, checked, clearSession, client, emailMode, failure, json, markPasswordSetup, passwordSetupPending, pkceClient, saveSession } from '@/lib/portal/server';
+import { email, password, PortalError, sameOrigin, text, uuid } from '@/lib/portal/validation';
 
 export const dynamic = 'force-dynamic';
 
@@ -11,7 +11,7 @@ export async function GET() {
     const { data: assurance } = await db.auth.mfa.getAuthenticatorAssuranceLevel();
     const { data: factors, error } = await db.auth.mfa.listFactors();
     if (error) throw new PortalError('Staff verification could not be loaded. Try signing in again.');
-    return json({ email: user.email, staff: Boolean(membership), mfaRequired: Boolean(mfaRequired), verified: assurance?.currentLevel === 'aal2', factors: factors?.totp.filter(f => f.status === 'verified').map(f => ({ id: f.id, name: f.friendly_name })) ?? [] });
+    return json({ passwordSetup: await passwordSetupPending(), email: user.email, staff: Boolean(membership), mfaRequired: Boolean(mfaRequired), verified: assurance?.currentLevel === 'aal2', factors: factors?.totp.filter(f => f.status === 'verified').map(f => ({ id: f.id, name: f.friendly_name })) ?? [] });
   } catch (error) { return failure(error); }
 }
 
@@ -26,6 +26,22 @@ export async function POST(request: Request) {
       catch { /* Local sign-out must also work after expiry or a service outage. */ }
       finally { await clearSession(); }
       return json({ ok: true });
+    }
+    if (body.action === 'password-login') {
+      const db = client();
+      const { data, error } = await db.auth.signInWithPassword({ email: email(body.email), password: password(body.password) });
+      if (error?.status === 429) throw new PortalError('Too many attempts. Please wait before trying again.', 429);
+      if (error || !data.session || !data.user?.email_confirmed_at) throw new PortalError('Email or password is incorrect, or the account is not ready. Use the password setup link if this is your first visit.', 401);
+      await clearSession();
+      await saveSession(data.session);
+      return json({ ok: true });
+    }
+    if (body.action === 'request-password-reset') {
+      const db = await pkceClient();
+      const { error } = await db.auth.resetPasswordForEmail(email(body.email), { redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://www.neuroficio.com'}/portal` });
+      if (error?.status === 429) throw new PortalError('Please wait before requesting another email.', 429);
+      if (error && error.status !== 400 && error.status !== 422) throw new PortalError('Email delivery is temporarily unavailable. Please contact your care team.', 503);
+      return json({ message: 'If this email has an active care account, a password setup link will arrive shortly. Open it in this same browser within 15 minutes.' });
     }
     if (body.action === 'send-code') {
       const address = email(body.email);
@@ -46,16 +62,22 @@ export async function POST(request: Request) {
       const { data: verified, error: verifyError } = await db.auth.getUser();
       if (verifyError || !verified.user?.email_confirmed_at) throw new PortalError('Email verification could not be confirmed. Please request a new link.');
       await saveSession(data.session);
-      return json({ ok: true });
+      await markPasswordSetup(true);
+      return json({ ok: true, passwordSetup: true });
     }
     if (body.action === 'accept-invitation-link') {
       const expectedEmail = email(body.email);
+      const newPassword = password(body.password, true);
       const db = client();
       const { data, error } = await db.auth.setSession({ access_token: text(body.access_token, 'Invitation', 6000), refresh_token: text(body.refresh_token, 'Invitation', 1000) });
       if (error || !data.session) throw new PortalError('This invitation link has expired. Contact your care team for another invitation.');
       const { data: verified, error: verifyError } = await db.auth.getUser();
       if (verifyError || !verified.user?.email_confirmed_at || !verified.user.invited_at || verified.user.email?.toLowerCase() !== expectedEmail) throw new PortalError('The email address does not match this verified invitation.');
-      await saveSession(data.session);
+      const { error: passwordError } = await db.auth.updateUser({ password: newPassword });
+      if (passwordError) throw new PortalError('Your password could not be saved. Try a different password or request a fresh setup link.');
+      const { data: updated } = await db.auth.getSession();
+      await saveSession(updated.session ?? data.session);
+      await markPasswordSetup(false);
       return json({ ok: true });
     }
     if (body.action === 'verify-code') {
@@ -67,6 +89,15 @@ export async function POST(request: Request) {
       return json({ ok: true });
     }
     const { db } = await authenticated();
+    if (body.action === 'set-password') {
+      const { error } = await db.auth.updateUser({ password: password(body.password, true) });
+      if (error) throw new PortalError('Your password could not be saved. Try a different password or request a fresh setup link.');
+      const { data } = await db.auth.getSession();
+      if (!data.session) throw new PortalError('Please request a fresh password setup link.', 401);
+      await saveSession(data.session);
+      await markPasswordSetup(false);
+      return json({ ok: true });
+    }
     if (body.action === 'enroll-mfa') {
       const { data: factors } = await db.auth.mfa.listFactors();
       if (factors?.totp.some(f => f.status === 'verified')) throw new PortalError('Use your existing authenticator to verify your account.');
