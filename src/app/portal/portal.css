@@ -229,3 +229,8 @@
 @media(prefers-reduced-motion:reduce){.cp-button{transition:none}}
 @media print{body:has(.cp-app){background:white!important}.cp-sidebar,.cp-demo-bar,.cp-topbar,.cp-page-heading,.cp-patient-picker,.cp-editor,.cp-care-footer,.cp-messages,.cp-no-print,.cp-skip{display:none!important}.cp-app,.cp-workspace,.cp-content{display:block!important;padding:0!important;margin:0!important;width:100%!important;background:white!important}.cp-card:not(.cp-report){display:none!important}.cp-report{border:0;border-radius:0;box-shadow:none;padding:0;margin:0;break-after:page}.cp-report:last-of-type{break-after:auto}.cp-report h4{break-after:avoid}.cp-report td,.cp-report th{font-size:10px}.cp-report p,.cp-report li{font-size:11px}.cp-report table{break-inside:auto}.cp-report tr{break-inside:avoid}.cp-report footer{font-size:9px}}
 @media print{.cp-content:has(.cp-print-target) .cp-report:not(.cp-print-target){display:none!important}}
+
+.cp-login-options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0}
+.cp-login-option{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:10px;padding:18px 16px;border:1px solid #d6e0d5;border-radius:10px;background:#fbfdf8;color:#2c5949;min-width:0}
+.cp-login-option strong{font-size:14px;line-height:1.4}.cp-login-option span{font-size:11px;line-height:1.7;color:#61736a}.cp-login-option.active{border-color:#2f6f5c;background:#edf5e9;box-shadow:0 0 0 1px #2f6f5c}.cp-login-option:hover{background:#edf5e9}
+@media(max-width:400px){.cp-login-options{grid-template-columns:1fr}.cp-login-option{padding:16px}}
