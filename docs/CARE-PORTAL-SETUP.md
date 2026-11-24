@@ -1,3 +1,5 @@
+> Current configuration (24 November 2026): staff authenticator enforcement is temporarily disabled at the owner?s request. Apply `202611240001_staff_email_access.sql` after the initial migration. Email verification, clinic membership, clinician assignment and patient isolation still apply. To restore enforcement, replace `care_staff_mfa_required()` with the same SQL function returning `true`; the application and database both read this setting. Existing enrolled factors are preserved. The MFA instructions below describe that enforced configuration.
+
 # NeuroFicio Care Portal: setup and release notes
 
 ## What is implemented

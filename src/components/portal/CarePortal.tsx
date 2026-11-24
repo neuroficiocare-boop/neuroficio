@@ -80,7 +80,7 @@ function ReportView({ report, demo }: { report: Report; demo: boolean }) {
   </article>;
 }
 
-type AuthStatus = { email: string; staff: boolean; verified: boolean; factors: { id: string; name?: string }[] };
+type AuthStatus = { email: string; staff: boolean; mfaRequired: boolean; verified: boolean; factors: { id: string; name?: string }[] };
 
 export default function CarePortal({ connected, emailMode = 'link' }: { connected: boolean; emailMode?: 'link' | 'code' }) {
   const [data, setData] = useState<PortalData | null>(null);
@@ -113,7 +113,7 @@ export default function CarePortal({ connected, emailMode = 'link' }: { connecte
   async function loadAccount() {
     const status = await api('auth') as AuthStatus;
     setAuth(status);
-    if (status.staff && !status.verified) { setLoading(false); return; }
+    if (status.staff && status.mfaRequired && !status.verified) { setLoading(false); return; }
     const next = await api('data') as PortalData;
     setData(next); setSelected(current => next.patients.some(p => p.id === current) ? current : next.patients[0]?.id ?? '');
     setLoading(false);
@@ -230,7 +230,7 @@ export default function CarePortal({ connected, emailMode = 'link' }: { connecte
 
   if (!data) return <main className="cp-login"><div className="cp-login-brand"><Link href="/" className="cp-wordmark">neuro<span>ficio</span><small>CARE PORTAL</small></Link><Link href="/" className="cp-back">Back to website <ArrowUpRight size={16} /></Link></div>
     <div className="cp-login-grid"><section className="cp-welcome"><span className="cp-kicker">A little progress. Every day.</span><h1>Your care.<br />Your progress.<br /><em>All in one place.</em></h1><p>A clearer picture of your recovery, with your home-care plan and your care team beside you.</p><div className="cp-welcome-features"><span><ClipboardList />A plan shaped around you</span><span><TrendingUp />Progress you can follow</span><span><Stethoscope />Connected to your care team</span></div><div className="cp-login-note"><Heart size={22} /><p>Designed for patients, families and the clinicians supporting their recovery.</p></div></section>
-    <section className="cp-card cp-signin">{loading ? <div role="status"><ShieldCheck size={32} /><h2>Opening your care account…</h2></div> : auth?.staff && !auth.verified ? <>
+    <section className="cp-card cp-signin">{loading ? <div role="status"><ShieldCheck size={32} /><h2>Opening your care account…</h2></div> : auth?.staff && auth.mfaRequired && !auth.verified ? <>
       <span className="cp-icon-tile"><ShieldCheck /></span><span className="cp-kicker">Clinical workspace</span><h2>One more security check</h2><p>Use an authenticator app to protect access to clinical records.</p>{messages}
       {!auth.factors.length && !enrollment && <button disabled={busy} className="cp-button" onClick={() => authenticate({ action: 'enroll-mfa' })}>Set up authenticator <ArrowRight size={16} /></button>}
       {enrollment && <div className="cp-mfa"><img src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(enrollment.qr)}`} alt="Scan this QR code with your authenticator app" width="200" height="200" /><p>Or enter this setup key:</p><code>{enrollment.secret}</code></div>}

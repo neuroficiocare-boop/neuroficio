@@ -17,6 +17,7 @@ test('Care portal PostgreSQL access policies', async t => {
       grant usage on schema auth, public to anon, authenticated;
     `);
     await db.exec(await readFile(new URL('../supabase/migrations/202611180001_care_portal.sql', import.meta.url), 'utf8'));
+    await db.exec(await readFile(new URL('../supabase/migrations/202611240001_staff_email_access.sql', import.meta.url), 'utf8'));
     await db.query(`select set_config('request.jwt.claims', $1, false)`, [JSON.stringify({ sub: id(1), aal: 'aal2' })]);
     await db.exec(`
       insert into auth.users values
@@ -67,31 +68,31 @@ test('Care portal PostgreSQL access policies', async t => {
       await assert.rejects(db.exec(`insert into care_checkins(patient_id,plan_id,day,pain,energy) values ('${id(20)}','${id(30)}',current_date,2,3)`));
       assert.equal(await count('care_checkins'), 1);
     });
-    await t.test('staff records are denied until MFA and limited by assignment', async () => {
+    await t.test('email-only staff access remains limited by assignment', async () => {
       await as(2);
       assert.equal(await count('care_memberships'), 1);
-      assert.equal(await count('care_patients'), 0);
-      assert.equal(await count('care_notes'), 0);
-      await as(2, 'aal2');
+      assert.equal(await count('care_patients'), 1);
+      assert.equal(await count('care_notes'), 2);
+      await as(2);
       assert.equal(await count('care_patients'), 1);
       assert.equal(await count('care_notes'), 2);
       await assert.rejects(db.exec(`insert into care_notes(patient_id,title,body) values ('${id(21)}','Denied','Denied')`));
     });
     await t.test('clinical lead has clinic-wide access but cannot cross clinics', async () => {
-      await as(1, 'aal2');
+      await as(1);
       assert.equal(await count('care_patients'), 3);
       assert.equal((await db.query('select id from care_patients where id=$1', [id(22)])).rows.length, 0);
-      await as(5, 'aal2');
+      await as(5);
       assert.equal(await count('care_patients'), 1);
       assert.equal(await count('care_notes'), 0);
     });
-    await t.test('only assigned MFA staff can acknowledge a check-in', async () => {
+    await t.test('only assigned staff can acknowledge a check-in', async () => {
       await as(3);
       const checkin = (await db.query('select id from care_checkins')).rows[0].id;
       await assert.rejects(db.query('select care_review_checkin($1,$2)', [checkin, id(20)]));
-      await as(5, 'aal2');
+      await as(5);
       await assert.rejects(db.query('select care_review_checkin($1,$2)', [checkin, id(20)]));
-      await as(2, 'aal2');
+      await as(2);
       await db.query('select care_review_checkin($1,$2)', [checkin, id(20)]);
       assert.equal((await db.query('select reviewed_by from care_checkins')).rows[0].reviewed_by, id(2));
     });
@@ -101,10 +102,10 @@ test('Care portal PostgreSQL access policies', async t => {
       assert.equal(await count('care_patients'), 0);
     });
     await t.test('assignment revocation takes effect on the next request', async () => {
-      await as(2, 'aal2'); assert.equal(await count('care_patients'), 1);
+      await as(2); assert.equal(await count('care_patients'), 1);
       await db.exec('reset role');
       await db.exec(`update care_patients set clinician_id='${id(1)}' where id='${id(20)}'`);
-      await as(2, 'aal2'); assert.equal(await count('care_patients'), 0);
+      await as(2); assert.equal(await count('care_patients'), 0);
     });
     await t.test('anonymous requests cannot read records or invoke privileged functions', async () => {
       await as(null, 'aal1', 'anon');
@@ -113,7 +114,7 @@ test('Care portal PostgreSQL access policies', async t => {
       await assert.rejects(db.exec(`select care_is_staff('${id(20)}')`));
     });
     await t.test('writes retain an audit trail without copying clinical text', async () => {
-      await as(1, 'aal2');
+      await as(1);
       const audit = (await db.query('select event, actor from care_audit')).rows;
       assert.ok(audit.some(a => a.event === 'care_checkins:INSERT' && a.actor === id(3)));
       assert.ok(audit.some(a => a.event === 'care_checkins:UPDATE' && a.actor === id(2)));

@@ -49,8 +49,9 @@ export async function identity(db: SupabaseClient) {
   const { data, error } = await db.from('care_memberships').select('role, clinic_id').maybeSingle();
   if (error) throw new PortalError('Care account permissions could not be loaded.', 503);
   if (data) {
+    const required = checked(await db.rpc('care_staff_mfa_required'));
     const { data: assurance, error: mfaError } = await db.auth.mfa.getAuthenticatorAssuranceLevel();
-    if (mfaError || assurance?.currentLevel !== 'aal2') throw new PortalError('Complete staff verification to open clinical records.', 403);
+    if (required && (mfaError || assurance?.currentLevel !== 'aal2')) throw new PortalError('Complete staff verification to open clinical records.', 403);
     return data as { role: 'lead' | 'clinician'; clinic_id: string };
   }
   return { role: 'patient' as const, clinic_id: '' };

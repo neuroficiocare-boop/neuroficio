@@ -7,10 +7,11 @@ export async function GET() {
   try {
     const { db, user } = await authenticated();
     const membership = checked(await db.from('care_memberships').select('role').maybeSingle());
+    const mfaRequired = checked(await db.rpc('care_staff_mfa_required'));
     const { data: assurance } = await db.auth.mfa.getAuthenticatorAssuranceLevel();
     const { data: factors, error } = await db.auth.mfa.listFactors();
     if (error) throw new PortalError('Staff verification could not be loaded. Try signing in again.');
-    return json({ email: user.email, staff: Boolean(membership), verified: assurance?.currentLevel === 'aal2', factors: factors?.totp.filter(f => f.status === 'verified').map(f => ({ id: f.id, name: f.friendly_name })) ?? [] });
+    return json({ email: user.email, staff: Boolean(membership), mfaRequired: Boolean(mfaRequired), verified: assurance?.currentLevel === 'aal2', factors: factors?.totp.filter(f => f.status === 'verified').map(f => ({ id: f.id, name: f.friendly_name })) ?? [] });
   } catch (error) { return failure(error); }
 }
 
